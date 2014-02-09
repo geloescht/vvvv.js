@@ -823,6 +823,54 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
     ctx = canvas.getContext('2d');
     canvas.ctx = ctx;
     
+    if(VVVV.Runtime == 'node')
+    {
+      this.gl = canvas.getContext('experimental-webgl');
+      var gl = this.gl;
+      
+      var fragmentShaderCode = "varying vec2 texCd; uniform sampler2D samp; void main(void) { gl_FragColor = texture2D(samp, texCd); if (gl_FragColor.a==0.0) discard;  }";
+      var vertexShaderCode = "attribute vec2 pos; varying vec2 texCd; void main(void) { gl_Position = vec4(pos, 0.0, 1.0); texCd = pos * 0.5 + vec2(0.5, 0.5); }";
+      
+      var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fragmentShader, fragmentShaderCode);
+      gl.compileShader(fragmentShader);
+      var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vertexShader, vertexShaderCode);
+      gl.compileShader(vertexShader);
+      console.log(gl.getShaderInfoLog(vertexShader));
+      
+      var shaderProgram = gl.createProgram();
+      gl.attachShader(shaderProgram, vertexShader);
+      gl.attachShader(shaderProgram, fragmentShader);
+      gl.linkProgram(shaderProgram);
+      
+      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        throw gl.getProgramInfoLog(shaderProgram);
+      }
+
+      gl.useProgram(shaderProgram);
+      
+      var vertices = new Float32Array([
+         1,  1,
+        -1,  1,
+         1, -1,
+        -1, -1
+      ]);
+      
+      var vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(gl.getAttribLocation(shaderProgram, "pos"));
+      gl.vertexAttribPointer(gl.getAttribLocation(shaderProgram, "pos"), 2, gl.FLOAT, false, 0, 0);
+      
+      gl.activeTexture(gl.TEXTURE0);
+      var texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255]));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.uniform1i(gl.getUniformLocation(shaderProgram, "samp"), 0);
+    }
   }
 
   this.evaluate = function() {
@@ -892,11 +940,19 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
       
       canvasOut.setValue(0, canvas);
       
+      if(VVVV.Runtime == "node")
+      {
+        var data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, ctx.canvas.width, ctx.canvas.height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, data);
+        this.gl.clearColor(0, 0, 0, 0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+      }
+      
     }
     
     canvas.loaded = true;
-
-
+    
   }
 
 }

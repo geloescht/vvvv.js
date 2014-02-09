@@ -308,6 +308,7 @@ VVVV.Nodes.FileTexture = function(id, graph) {
         textures[i].image = new Image();
         textures[i].image.onload = (function(j) {
           return function() {  // this is to create a new scope within the loop. see "javascript closure in for loops" http://www.mennovanslooten.nl/blog/post/62
+            console.log("Loaded texture", filename);
             gl.bindTexture(gl.TEXTURE_2D, textures[j]);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[j].image);
@@ -366,7 +367,7 @@ VVVV.Nodes.DX9Texture = function(id, graph) {
         return;
       if ( (source.width & (source.width-1)) != 0 || (source.height & (source.height-1)) != 0)
         console.log("Warning: Source renderer's width/height is not a power of 2. DX9Texture will most likely not work.");
-      if (source instanceof WebGLTexture) {
+      if (source instanceof gl.WebGLTexture) {
         outputOut.setValue(0, source);
       }
       else {
@@ -374,7 +375,13 @@ VVVV.Nodes.DX9Texture = function(id, graph) {
           texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+        if(source instanceof Image)
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+        else
+        {
+          var data = source.context.getImageData(0, 0, source.canvas.width, source.canvas.height).data;
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.canvas.width, source.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        }
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1236,6 +1243,8 @@ VVVV.Nodes.GenericShader = function(id, graph) {
     var gl = this.renderContexts[0];
     if (!gl)
       return;
+    if(!shader)
+      return;
     if (!shader.isSetup || this.contextChanged || techniqueIn.pinIsChanged()) {
       this.setupShader();
       shader.setup(gl);
@@ -1396,6 +1405,7 @@ VVVV.Nodes.Quad = function(id, graph) {
       fragmentShaderCode += "precision highp float;\n";
       fragmentShaderCode += "#endif\n";
       fragmentShaderCode += "uniform vec4 col : COLOR = {1.0, 1.0, 1.0, 1.0}; varying vec2 vs2psTexCd; uniform sampler2D Samp0; void main(void) { gl_FragColor = col*texture2D(Samp0, vs2psTexCd); if (gl_FragColor.a==0.0) discard;  }";
+      //fragmentShaderCode += "uniform vec4 col : COLOR = {1.0, 1.0, 1.0, 1.0}; varying vec2 vs2psTexCd; uniform sampler2D Samp0; void main(void) { gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);  }";
       var vertexShaderCode = "attribute vec3 PosO : POSITION; attribute vec2 TexCd : TEXCOORD0; uniform mat4 tW : WORLD; uniform mat4 tV : VIEW; uniform mat4 tP : PROJECTION; uniform mat4 tTex; varying vec2 vs2psTexCd; void main(void) { gl_Position = tP * tV * tW * vec4(PosO, 1.0); vs2psTexCd = (tTex * vec4(TexCd.xy-.5, 0.0, 1.0)).xy+.5; }";
       
       shader = new VVVV.Types.ShaderProgram();
@@ -1403,7 +1413,6 @@ VVVV.Nodes.Quad = function(id, graph) {
       shader.setFragmentShader(fragmentShaderCode);
       shader.setVertexShader(vertexShaderCode);
       shader.setup(gl);
-          
     }
     
     var maxSize = this.getMaxInputSliceCount();
@@ -1637,7 +1646,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
       return;
       
     attachMouseEvents(canvas);
-
+    
     try {
       canvasCtxt = canvas.get(0).getContext("experimental-webgl", {preserveDrawingBuffer: true});
       canvasCtxt.viewportWidth = parseInt(canvas.get(0).width);
@@ -1696,7 +1705,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
     // create default white texture
     
     gl = this.ctxt;
- 
+    
     var pixels = new Uint8Array([255, 255, 255]);
     gl.DefaultTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, gl.DefaultTexture);
@@ -1854,7 +1863,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
             case "mat": gl['uniformMatrix'+u.uniformSpec.dimension+'fv'](u.uniformSpec.position, false, u.value); break;
             case "vec": gl['uniform'+u.uniformSpec.dimension+'fv'](u.uniformSpec.position, u.value); break;
             case "int": gl['uniform'+u.uniformSpec.dimension+'i'](u.uniformSpec.position, u.value); break;
-            case "float": gl['uniform'+u.uniformSpec.dimension+'f'](u.uniformSpec.position, u.value); break;
+            case "float": gl['uniform'+u.uniformSpec.dimension+'f'](u.uniformSpec.position, parseInt(u.value)); break; //FIXME: find out where the string comes from
             case "sampler":
               var tex = u.value;
               if (tex==VVVV.DefaultTexture)
@@ -1867,6 +1876,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
           }
           loopstart = new Date().getTime();
         }
+        
         
         gl.drawElements(gl[renderState.polygonDrawMode], layer.mesh.numIndices, gl.UNSIGNED_SHORT, 0);
         

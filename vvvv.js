@@ -4,18 +4,17 @@
 // Additional authors of sub components are mentioned at the specific code locations.
 
 /** @define {string} */
-var VVVV_ENV = 'development';
-
+VVVV_ENV = 'development';
 
 // some prerequisites ...
-$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+/*$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
   if ( options.dataType == 'script' || originalOptions.dataType == 'script' ) {
       options.cache = true;
   }
-});
+});*/
 
-if(!window.console) {
-  window.console = {
+if(!console) {
+  console = {
     log : function(str) {
     }
   };
@@ -23,6 +22,7 @@ if(!window.console) {
 
 // actual VVVV.js initialization code
 VVVV = {};
+VVVV.Runtime = typeof global !== 'undefined' ? "node" : "browser";
 VVVV.Config = {};
 VVVV.Config.auto_undo = false;
 VVVV.Nodes = {};
@@ -35,6 +35,8 @@ VVVV.onNotImplemented = function(nodename) {
 
 VVVV.loadCounter = 0;
 VVVV.loadScript = function(url, callback) {
+  if(VVVV.Runtime == "browser")
+  {
     var head = document.getElementsByTagName('head')[0];
     var script = document.createElement('script');
     script.async = false;
@@ -43,6 +45,18 @@ VVVV.loadScript = function(url, callback) {
       script.addEventListener('load', callback);
     VVVV.loadCounter++;
     head.appendChild(script);
+  }
+  else
+  {
+    VVVV.loadCounter++;
+    setImmediate( function() {
+      var fs = require("fs");
+      console.log("Loading " + url);
+      eval.call(null, fs.readFileSync(VVVV.Root + url,'utf8'));
+      if (callback)
+        callback();
+    });
+  }
 };
 
 /**
@@ -57,25 +71,46 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
   if (VVVV_ENV=='development') console.log('loading vvvv.js ...');
 
   if (VVVV_ENV=='development') {
-    var head = document.getElementsByTagName('head')[0];
   
     function loadMonitor(event) {
-      event.target.removeEventListener('load', loadMonitor);
+      if(event)
+        event.target.removeEventListener('load', loadMonitor);
       if (--VVVV.loadCounter <= 0) {
         initialisationComplete();
       };
     }
     
-    if ($('script[src*=thirdparty]').length==0)
+    function isLoaded(name, by)
+    {
+      if(VVVV.Runtime == "browser")
+        return !!(document.querySelector('script[src*="' + name + '"]'));
+      else
+      {
+        if(!by)
+          by = require.main;
+        
+        var ret = false;
+        by.children.forEach(function(item)
+        {
+          if(item.filename.indexOf(name) != -1)
+            ret = true;
+          else
+            ret = isLoaded(name, item);
+        });
+        return ret;
+      }
+    }
+    
+    if (!isLoaded('thirdparty'))
       VVVV.loadScript('thirdparty.js', loadMonitor);
-    if ($('script[src*=underscore]').length==0)
+    if (!isLoaded('underscore'))
       VVVV.loadScript('lib/underscore/underscore-min.js', loadMonitor);
-    if ($('script[src*="d3.js"]').length==0 && (mode=='full' || mode=='vvvviewer'))
+    if (!isLoaded('d3.js') && (mode=='full' || mode=='vvvviewer'))
       VVVV.loadScript('lib/d3-v1.14/d3.min.js', loadMonitor);
-    if ($('script[src*=glMatrix]').length==0 && (mode=='full' || mode=='run'))
+    if (!isLoaded('glMatrix') && (mode=='full' || mode=='run'))
       VVVV.loadScript('lib/glMatrix-0.9.5.min.js', loadMonitor);
   
-    if ($('script[src*="vvvv.core.js"]').length==0) {
+    if (!isLoaded('vvvv.core.js')) {
       VVVV.loadScript('core/vvvv.core.js', loadMonitor);
       VVVV.loadScript('core/vvvv.core.vvvvconnector.js', loadMonitor);
       if (mode=='run' || mode=='full') {
@@ -137,6 +172,17 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
     initialisationComplete();
 };
 
-
+if(VVVV.Runtime == "node")
+{
+  WebSocket = require("ws");
+  http = require('http');
+  fs = require("fs");
+  var nodeEnv = require("./node-env");
+  $ = nodeEnv.$;
+  window = nodeEnv.window;
+  document = nodeEnv.document;
+  
+  exports = VVVV;
+}
 
 

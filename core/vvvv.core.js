@@ -525,6 +525,7 @@ VVVV.Core = {
           currSlice += v[i];
       }
       result.push(currSlice);
+      result = result.map(function(x) { if(parseInt(x).toString() == x) x = parseInt(x); return x; });
       return result;
     }
     
@@ -555,8 +556,13 @@ VVVV.Core = {
         if (VVVV_ENV=='development') console.log('complete: '+this.nodename);
         thisPatch.XMLCode = xml;
       }
+      
+      if(VVVV.Runtime == "browser")
+        var $xml = $(xml);
+      else
+        var $xml = $.load(xml, { xmlMode: true, lowerCaseTags: true }).root();
     
-      $windowBounds = $(xml).find('bounds[type="Window"]').first();
+      $windowBounds = $xml.find('bounds[type="Window"]').first();
       if ($windowBounds.length>0) {
         thisPatch.width = $windowBounds.attr('width')/15;
         thisPatch.height = $windowBounds.attr('height')/15;
@@ -571,7 +577,7 @@ VVVV.Core = {
         
       var nodesLoading = 0;
 
-      $(xml).find('node').each(function() {
+      $xml.find('node').each(function() {
         
         // in case of renaming a node, delete the old one first
         if ($(this).attr('createme')=='pronto' && thisPatch.nodeMap[$(this).attr('id')]!=undefined) {
@@ -747,7 +753,7 @@ VVVV.Core = {
   		    
           //Check for non implemented nodes
           if (($(this).attr('visible')==1 && $(this).attr('pintype')!='Configuration') || n.isSubpatch) {
-            if ($(this).attr('pintype')=="Output" || $(xml).find('link[srcnodeid='+n.id+']').filter("link[srcpinname='"+pinname.replace(/[\[\]]/,'')+"']").length > 0) {
+            if ($(this).attr('pintype')=="Output" || $xml.find('link[srcnodeid='+n.id+']').filter("link[srcpinname='"+pinname.replace(/[\[\]]/,'')+"']").length > 0) {
               if (n.outputPins[pinname] == undefined) {
                 //Add as output list if not already there
                 n.addOutputPin(pinname, values);
@@ -802,7 +808,7 @@ VVVV.Core = {
           newLinks = {};
         
         // first delete marked links 
-        $(xml).find('link[deleteme="pronto"]').each(function() {
+        $xml.find('link[deleteme="pronto"]').each(function() {
           var link = false;
           for (var i=0; i<thisPatch.linkList.length; i++) {
             if (thisPatch.linkList[i].fromPin.node.id==$(this).attr('srcnodeid') &&
@@ -823,7 +829,7 @@ VVVV.Core = {
             toPin.reset();
         });
         
-        $(xml).find('link[deleteme!="pronto"]').each(function() {
+        $xml.find('link[deleteme!="pronto"]').each(function() {
           var srcPin = thisPatch.pinMap[$(this).attr('srcnodeid')+'_out_'+$(this).attr('srcpinname')];
           var dstPin = thisPatch.pinMap[$(this).attr('dstnodeid')+'_in_'+$(this).attr('dstpinname')];
           
