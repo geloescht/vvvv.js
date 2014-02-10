@@ -340,7 +340,7 @@ VVVV.Nodes.ArcCanvas = function(id, graph) {
     this.lineWidth = 1.0;
     this.renderState = defaultRenderState;
   
-    this.draw = function(ctx) {
+    this.draw = function drawArc(ctx) {
       ctx.save();
       if (this.transform)
         ctx.transform(this.transform[0], this.transform[1], this.transform[4], this.transform[5], this.transform[12], this.transform[13]);
@@ -417,7 +417,7 @@ VVVV.Nodes.TextCanvas = function(id, graph) {
     this.baseline = 'top';
     this.renderState = defaultRenderState;
   
-    this.draw = function(ctx) {
+    this.draw = function drawText(ctx) {
       ctx.save();
       if (this.transform)
         ctx.transform(this.transform[0], this.transform[1], this.transform[4], this.transform[5], this.transform[12], this.transform[13]);
@@ -504,7 +504,7 @@ VVVV.Nodes.BezierCurveCanvas = function(id, graph) {
     this.fillColor = [1.0, 1.0, 1.0, 1.0];
     this.renderState = defaultRenderState;
   
-    this.draw = function(ctx) {
+    this.draw = function drawBezierCurve(ctx) {
       if (this.x.length<1)
         return;
       this.renderState.apply(ctx);
@@ -623,7 +623,7 @@ VVVV.Nodes.QuadCanvas = function(id, graph) {
     this.texture = undefined;
     this.color = [1.0, 1.0, 1.0, 1.0];
   
-    this.draw = function(ctx) {
+    this.draw = function drawQuad(ctx) {
       ctx.save();
       if (this.transform)
         ctx.transform(this.transform[0], this.transform[1], this.transform[4], this.transform[5], this.transform[12], this.transform[13]);
@@ -829,7 +829,7 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
       var gl = this.gl;
       
       var fragmentShaderCode = "varying vec2 texCd; uniform sampler2D samp; void main(void) { gl_FragColor = texture2D(samp, texCd); if (gl_FragColor.a==0.0) discard;  }";
-      var vertexShaderCode = "attribute vec2 pos; varying vec2 texCd; void main(void) { gl_Position = vec4(pos, 0.0, 1.0); texCd = pos * 0.5 + vec2(0.5, 0.5); }";
+      var vertexShaderCode = "attribute vec2 pos; varying vec2 texCd; void main(void) { gl_Position = vec4(pos, 0.0, 1.0); texCd = pos * vec2(0.5, -0.5) + vec2(0.5, 0.5); }";
       
       var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       gl.shaderSource(fragmentShader, fragmentShaderCode);
