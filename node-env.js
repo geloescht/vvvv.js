@@ -58,7 +58,7 @@ cheerio.prototype.bind = function(name, cb)
 ['keydown', 'mousemove', 'mousedown', 'mouseup', 'ready', 'resize']
 .forEach(function(item)
 {
-  cheerio.prototype[item] = cheerio.prototype.bind.bind(this, item);
+  cheerio.prototype[item] = function(cb) { this.bind(item, cb); };
 });
 
 cheerio.prototype.detach = function(name) {};
@@ -87,7 +87,7 @@ cheerio.prototype.get = function(i)
           .forEach(function(item)
           {
             if(typeof window !== 'undefined' && window instanceof EventEmitter)
-              document.on(item, function() { window.emit.apply(window, [item].concat(arguments)); });
+              document.platform.on(item, function(e) { document.emit.call(document, item, e); });
           });
           Image = WebGL.Image;
         }
@@ -125,6 +125,14 @@ cheerio.prototype.get = function(i)
   }
   return node;
 };
+
+Object.defineProperty(cheerio.prototype, 'nodeName',
+{
+  get: function()
+  {
+    return this[0].name.toUpperCase();
+  }
+});
 
 //AJAX maps nicely to asynchronous IO
 
