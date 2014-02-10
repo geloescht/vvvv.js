@@ -131,7 +131,7 @@ cheerio.prototype.get = function(i)
 $.__proto__.ajax = function(args) //TODO: find out how bad this really is
 {
   var fs = require('fs');
-  fs.readFile(args.url, function(err, result)
+  /*fs.readFile(args.url, function(err, result)
   {
     if(err)
     {
@@ -141,14 +141,16 @@ $.__proto__.ajax = function(args) //TODO: find out how bad this really is
         throw err;
     }
     args.success(result);
-  });
+  });*/
+  //FIXME: Changed to synchronous IO for now because of race condition when creating shader pins
+  args.success(fs.readFileSync(args.url,'utf8'));
 };
 
 //some stubs
 
 cheerio.prototype.offset = function()
 {
-  return { left:0, right:0 };
+  return { left:0, top:0 };
 }
 
 //aaaand export everything

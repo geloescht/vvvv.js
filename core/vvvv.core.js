@@ -107,7 +107,7 @@ VVVV.Core = {
     }
 	
     this.isConnected = function() {
-      return (this.links.length > 0 || (this.masterPin && this.masterPin.isConnected()));
+      return (this.links.length > 0 || (this.masterPin != null && this.masterPin.isConnected()));
     }
     
     this.getSliceCount = function() {
