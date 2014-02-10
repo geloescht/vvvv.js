@@ -320,6 +320,10 @@ VVVV.Nodes.DivideValue = function(id, graph) {
     var maxSize = this.getMaxInputSliceCount();
 
     for (var i=0; i<maxSize; i++) {
+      if (input2In.getValue(i)==0) {
+        outputOut.setValue(i, 1.0);
+        continue;
+      }
       outputOut.setValue(i, input1In.getValue(i)/input2In.getValue(i));
     }
     outputOut.setSliceCount(maxSize);
@@ -346,12 +350,12 @@ VVVV.Nodes.IOBoxValueAdvanced = function(id, graph) {
     compatibility_issues: []
   };
   
-  this.addInputPin("SliceOffset", [0], this);
-  this.addInputPin("X Input Value", [0.0], this);
+  //this.addInputPin("SliceOffset", [0], this);
+  //this.addInputPin("X Input Value", [0.0], this);
   this.addInputPin("Y Input Value", [0.0], this);
   this.addInvisiblePin("Rows",[1.0],this);
   
-  this.addOutputPin("X Output Value", [0.0], this);
+  //this.addOutputPin("X Output Value", [0.0], this);
   this.addOutputPin("Y Output Value", [0.0], this);
 
   this.evaluate = function() {
@@ -360,13 +364,6 @@ VVVV.Nodes.IOBoxValueAdvanced = function(id, graph) {
         this.outputPins["Y Output Value"].setValue(i, parseFloat(this.inputPins["Y Input Value"].values[i]));
       }
       this.outputPins["Y Output Value"].setSliceCount(this.inputPins["Y Input Value"].getSliceCount());
-    }
-    
-    if (this.inputPins["X Input Value"].pinIsChanged()) {
-      for (var i=0; i<this.inputPins["X Input Value"].values.length; i++) {
-        this.outputPins["X Output Value"].setValue(i, parseFloat(this.inputPins["X Input Value"].values[i]));
-      }
-      this.outputPins["X Output Value"].setSliceCount(this.inputPins["X Input Value"].getSliceCount());
     }
   }
 
@@ -385,6 +382,8 @@ VVVV.Nodes.IOBoxValueAdvanced.prototype = new VVVV.Core.Node();
 
 VVVV.Nodes.CountValue = function(id, graph) {
   this.constructor(id, "Count (Value)", graph);
+  
+  this.auto_nil = false;
   
   this.meta = {
     authors: ['Matthias Zauner'],
@@ -436,10 +435,6 @@ VVVV.Nodes.SwitchValueInput = function(id, graph) {
   this.evaluate = function() {
     var maxSize = this.getMaxInputSliceCount();
     
-    if (switchIn.getValue(0)==undefined) {
-      outputOut.setValue(0, undefined);
-      return;
-    }
     for (var i=0; i<maxSize; i++) {
       outputOut.setValue(i, inputIn[Math.round(Math.abs(switchIn.getValue(i)))%inputIn.length].getValue(i));
     }
@@ -525,7 +520,7 @@ VVVV.Nodes.AsString = function(id, graph) {
         case "Real": out = parseFloat(inputIn.getValue(i)).toFixed(4); break;
         case "Integer": out = parseInt(inputIn.getValue(i)).toFixed(0); break;
       }
-      outputOut.setValue(i, parseFloat(inputIn.getValue(i)).toFixed(4));
+      outputOut.setValue(i, out);
     }
     outputOut.setSliceCount(maxSize);
 
@@ -754,6 +749,11 @@ VVVV.Nodes.MapValue = function(id, graph) {
       var destMin = parseFloat(destMinimumIn.getValue(i));
       var destMax = parseFloat(destMaximumIn.getValue(i));
       var mapping = mappingIn.getValue(i);
+      
+      if (srcMax == srcMin) {
+        outputOut.setValue(i, destMin);
+        continue;
+      }
       
       input = input - srcMin;
       srcMax = srcMax - srcMin;

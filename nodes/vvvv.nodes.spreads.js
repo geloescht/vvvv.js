@@ -27,7 +27,7 @@ VVVV.Nodes.GetSliceSpreads = function(id, graph) {
   
   this.addOutputPin("Output", [0.0], this);
 
-  this.evaluate = function() {
+  this.evaluate = function() {  
     var size = this.inputPins["Index"].values.length;
     for (var i=0; i<size; i++) {
       this.outputPins["Output"].setValue(i, parseFloat(this.inputPins["Input"].getValue(Math.round(this.inputPins["Index"].getValue(i)))));
@@ -233,7 +233,8 @@ VVVV.Nodes.LinearSpread = function(id, graph) {
   
   var inputIn = this.addInputPin("Input", [0.0], this);
   var widthIn = this.addInputPin("Width", [1.0], this);
-  var alignmentIn = this.addInputPin("Alignment", [''], this);
+  var alignmentIn = this.addInputPin("Alignment", ['Centered'], this, true, VVVV.PinTypes.Enum);
+  alignmentIn.enumOptions = ["Centered", "Block", "LeftJustified", "RightJustified"]
   var phaseIn = this.addInputPin("Phase", [0.0], this);
   var countIn = this.addInputPin("Spread Count", [1], this);
   
@@ -259,8 +260,10 @@ VVVV.Nodes.LinearSpread = function(id, graph) {
     var result;
     for (var i=0; i<count; i++) {
       result = i*stepSize + shift;
-      if (alignment!='Block')
-        result = (result + phase*width) % width;
+      if (alignment!='Block') {
+        if (width!=0)
+          result = (result + phase*width) % width;
+      }
       result = input-width/2 + result;
       outputOut.setValue(i, result.toFixed(4));
     }
@@ -284,6 +287,8 @@ VVVV.Nodes.LinearSpread.prototype = new VVVV.Core.Node();
 VVVV.Nodes.AvoidNil = function(id, graph) {
   this.constructor(id, "AvoidNIL (Spreads)", graph);
   
+  this.auto_nil = false;
+  
   this.meta = {
     authors: ['Matthias Zauner'],
     original_authors: ['Kalle'],
@@ -302,10 +307,10 @@ VVVV.Nodes.AvoidNil = function(id, graph) {
       if (inputIn.values[0]==undefined) {
         source = defaultIn;
       }
-      outputOut.values = [];
       for (var i=0; i<source.values.length; i++) {
         outputOut.setValue(i, source.getValue(i));
       }
+      outputOut.setSliceCount(source.getSliceCount());
     }
     
 

@@ -28,6 +28,7 @@ VVVV.Config.auto_undo = false;
 VVVV.Nodes = {};
 VVVV.PinTypes = {};
 VVVV.NodeLibrary = {};
+VVVV.NodeNames = [];
 
 VVVV.onNotImplemented = function(nodename) {
   console.log("Warning: "+nodename+" is not implemented.");
@@ -106,7 +107,7 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
     if (!isLoaded('underscore'))
       VVVV.loadScript('lib/underscore/underscore-min.js', loadMonitor);
     if (!isLoaded('d3.js') && (mode=='full' || mode=='vvvviewer'))
-      VVVV.loadScript('lib/d3-v1.14/d3.min.js', loadMonitor);
+      VVVV.loadScript('lib/d3-v3/d3.v3.min.js', loadMonitor);
     if (!isLoaded('glMatrix') && (mode=='full' || mode=='run'))
       VVVV.loadScript('lib/glMatrix-0.9.5.min.js', loadMonitor);
   
@@ -122,6 +123,7 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
         VVVV.loadScript('nodes/vvvv.nodes.boolean.js', loadMonitor);
         VVVV.loadScript('nodes/vvvv.nodes.color.js', loadMonitor);
         VVVV.loadScript('nodes/vvvv.nodes.spreads.js', loadMonitor);
+        VVVV.loadScript('nodes/vvvv.nodes.spectral.js', loadMonitor);
         VVVV.loadScript('nodes/vvvv.nodes.animation.js', loadMonitor);
         VVVV.loadScript('nodes/vvvv.nodes.network.js', loadMonitor);
         VVVV.loadScript('nodes/vvvv.nodes.system.js', loadMonitor);
@@ -141,6 +143,7 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
       if (mode=='vvvviewer' || mode=='full') {
         VVVV.loadScript('vvvviewer/vvvv.vvvviewer.js', loadMonitor);
       }
+      VVVV.loadScript('editors/vvvv.editors.browser_editor.js', loadMonitor);
     }
   }
 
@@ -150,6 +153,7 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
       var x = new n(0, p);
       if (VVVV_ENV=='development') console.log("Registering "+x.nodename);
       VVVV.NodeLibrary[x.nodename.toLowerCase()] = n;
+      VVVV.NodeNames.push(x.nodename);
     });
 
     if (VVVV_ENV=='development') console.log('done ...');
