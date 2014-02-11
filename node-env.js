@@ -89,7 +89,7 @@ cheerio.prototype.get = function(i)
             if(typeof window !== 'undefined' && window instanceof EventEmitter)
               document.platform.on(item, function(e) { document.emit.call(document, item, e); });
           });
-          Image = WebGL.Image;
+          Image._setImplementation(WebGL.Image);
         }
         
         var canvas = document.createElement('canvas', this.attribs.width, this.attribs.height);
@@ -105,7 +105,7 @@ cheerio.prototype.get = function(i)
         if(typeof Canvas2D == 'undefined')
         {
           Canvas2D = require('canvas');
-          Image = Canvas2D.Image;
+          Image._setImplementation(Canvas2D.Image);
         }
 
         var canvas = new Canvas2D(parseInt(this.attribs.width), parseInt(this.attribs.height));
@@ -139,7 +139,7 @@ Object.defineProperty(cheerio.prototype, 'nodeName',
 $.__proto__.ajax = function(args) //TODO: find out how bad this really is
 {
   var fs = require('fs');
-  /*fs.readFile(args.url, function(err, result)
+  fs.readFile(args.url, function(err, result)
   {
     if(err)
     {
@@ -149,9 +149,7 @@ $.__proto__.ajax = function(args) //TODO: find out how bad this really is
         throw err;
     }
     args.success(result);
-  });*/
-  //FIXME: Changed to synchronous IO for now because of race condition when creating shader pins
-  args.success(fs.readFileSync(args.url,'utf8'));
+  });
 };
 
 //some stubs
@@ -201,3 +199,30 @@ extend(exports.document,
       return setTimeout.apply(this, arguments);
   }
 });
+
+exports.Image = function Image()
+{
+  if(exports.Image._implementation != null)
+    return new exports.Image._implementation();
+  else
+    exports.Image._instances.push(this);
+};
+
+exports.Image._instances = [];
+
+exports.Image._setImplementation = function(Impl)
+{
+  exports.Image._implementation = Impl;
+  exports.Image._instances.forEach(function(item)
+  {
+    /*
+    item.wrapped = new Impl();
+    for(var prop in item)
+      if(prop != "wrapped" && prop != "src")
+        item.wrapped[prop] = item[prop];
+    item.wrapped.src = item.src;
+    
+    FIXME: Don't know how to handle this :(
+    */
+  });
+}

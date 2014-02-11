@@ -1228,14 +1228,13 @@ VVVV.Nodes.GenericShader = function(id, graph) {
       else //pin already existed before
       {
         pin.setType(pinType);
-        /*FIXME: apparentely the link does not work this way, it's better than the inconsistent,
-        half connected link that we had before, however. Changed to synchronous IO in node.js
-        for now. Browser works anyway, however I suspect that the race condition could show if
-        loading the shader is slower than loading the rest of the nodes.
-        */
+        pin.links.forEach( function(link)
+        {
+          link.fromPin.connectionChanged();
+          link.fromPin.markPinAsChanged();
+        });
       }
       pin.dimensions = u.dimension;
-      pin.markPinAsChanged();
       shaderPins.push(pin);
     });
   }

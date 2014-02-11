@@ -185,6 +185,10 @@ if(VVVV.Runtime == "node")
   $ = nodeEnv.$;
   window = nodeEnv.window;
   document = nodeEnv.document;
+  Image = nodeEnv.Image;
+  
+  Canvas2D = require('canvas');
+  Image._setImplementation(Canvas2D.Image);
   
   exports = VVVV;
 }
