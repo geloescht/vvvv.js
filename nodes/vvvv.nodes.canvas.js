@@ -13,7 +13,7 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
-var glm = require('../lib/glMatrix-2.0.min');
+var glm = require('gl-matrix');
 
 VVVV.Types.CanvasTexture = { imageObject: undefined, loaded: false };
 

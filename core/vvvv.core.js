@@ -13,6 +13,8 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
+var _ = require('underscore');
+
 VVVV.Types = {}
 
 VVVV.MousePositions = {'_all': {'x': 0.0, 'y': 0.0, 'wheel': 0.0, 'lb': 0.0, 'mb': 0.0, 'rb': 0.0}}
@@ -756,6 +758,7 @@ VVVV.Core = {
     var thisPatch = this;
     
     this.doLoad = function(xml, ready_callback) {
+      var $xml = VVVV.Host.Markup.parseXML(xml);
       var p = this;
       do {
         p.dirty = true;
@@ -774,7 +777,7 @@ VVVV.Core = {
         thisPatch.XMLCode = xml;
       }
     
-      var $windowBounds = $(xml).find('bounds[type="Window"]').first();
+      $windowBounds = $xml.find('bounds[type="Window"]').first();
       if ($windowBounds.length>0) {
         thisPatch.windowWidth = $windowBounds.attr('width')/15;
         thisPatch.windowHeight = $windowBounds.attr('height')/15;
@@ -785,7 +788,7 @@ VVVV.Core = {
         
       var nodesLoading = 0;
 
-      $(xml).find('node').each(function() {
+      $xml.find('node').each(function() {
         
         // in case of renaming a node, delete the old one first
         if ($(this).attr('createme')=='pronto' && thisPatch.nodeMap[$(this).attr('id')]!=undefined) {
@@ -1035,11 +1038,12 @@ VVVV.Core = {
         updateLinks(xml);
         
       function updateLinks(xml) {
+        var $xml = VVVV.Host.Markup.parseXML(xml);
         if (syncmode=='complete')
           newLinks = {};
         
         // first delete marked links 
-        $(xml).find('link[deleteme="pronto"]').each(function() {
+        $xml.find('link[deleteme="pronto"]').each(function() {
           var link = false;
           for (var i=0; i<thisPatch.linkList.length; i++) {
             if (thisPatch.linkList[i].fromPin.node.id==$(this).attr('srcnodeid') &&
@@ -1060,7 +1064,7 @@ VVVV.Core = {
           toPin.markPinAsChanged();
         });
         
-        $(xml).find('link[deleteme!="pronto"]').each(function() {
+        $xml.find('link[deleteme!="pronto"]').each(function() {
           var srcPin = thisPatch.pinMap[$(this).attr('srcnodeid')+'_out_'+$(this).attr('srcpinname')];
           var dstPin = thisPatch.pinMap[$(this).attr('dstnodeid')+'_in_'+$(this).attr('dstpinname')];
           
@@ -1256,7 +1260,7 @@ VVVV.Core = {
       print_timing = false;
     }
     
-    $(window).keydown(function(e) {
+    VVVV.Host.Input.on('keydown', function(e) {
   
       // ctrl + alt + T to print execution times
       if (e.which==84 && e.altKey && e.ctrlKey)
@@ -1320,6 +1324,9 @@ VVVV.Core = {
     }
     
     // bind the #-shortcuts
+    
+    //FIXME: Editors should do this themselves! Disable for now for node.js
+    /*
     function checkLocationHash() {
       var match = window.location.hash.match('#([^\/]+)\/'+thisPatch.ressource+'$');
       if (match) {
@@ -1332,7 +1339,7 @@ VVVV.Core = {
     
     $(window).bind('hashchange', function() {
       checkLocationHash();
-    });
+    });*/
     
     
   }
