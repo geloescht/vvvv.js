@@ -13,6 +13,8 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
+var glm = require('../lib/glMatrix-2.0.min');
+
 VVVV.Types.CanvasTexture = { imageObject: undefined, loaded: false };
 
 VVVV.Types.CanvasRenderState = function() {
@@ -342,8 +344,8 @@ VVVV.Nodes.ArcCanvas = function(id, graph) {
   var layers = [];
   
   var Arc = function() {
-    this.transform = mat4.create();
-    mat4.identity(this.transform);
+    this.transform = glm.mat4.create();
+    glm.mat4.identity(this.transform);
     this.startAngle = 0;
     this.endAngle = 0.5;
     this.strokeColor = [1.0, 1.0, 1.0, 1.0];
@@ -419,8 +421,8 @@ VVVV.Nodes.TextCanvas = function(id, graph) {
   var layers = [];
   
   var Text = function() {
-    this.transform = mat4.create();
-    mat4.identity(this.transform);
+    this.transform = glm.mat4.create();
+    glm.mat4.identity(this.transform);
     this.text = "VVVV.js";
     this.font = "sans-serif";
     this.align = 'start';
@@ -501,8 +503,8 @@ VVVV.Nodes.BezierCurveCanvas = function(id, graph) {
   var layers = [];
   
   var BezierCurve = function() {
-    this.transform = mat4.create();
-    mat4.identity(this.transform);
+    this.transform = glm.mat4.create();
+    glm.mat4.identity(this.transform);
     this.x = [];
     this.y = [];
     this.c1x = [];
@@ -628,8 +630,8 @@ VVVV.Nodes.QuadCanvas = function(id, graph) {
   var layers = [];
   
   var Quad = function() {
-    this.transform = mat4.create();
-    mat4.identity(this.transform);
+    this.transform = glm.mat4.create();
+    glm.mat4.identity(this.transform);
     this.texture = undefined;
     this.color = [1.0, 1.0, 1.0, 1.0];
   

@@ -13,11 +13,13 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
+var glm = require('../lib/glMatrix-2.0.min');
+
 VVVV.PinTypes.Transform = {
   typeName: "Transform",
   reset_on_disconnect: true,
   defaultValue: function() {
-    return mat4.identity(mat4.create());
+    return glm.mat4.create();
   }
 }
 
@@ -39,7 +41,7 @@ VVVV.Nodes.Rotate = function(id, graph) {
     compatibility_issues: []
   };
   
-  var ident = mat4.identity(mat4.create());
+  var ident = glm.mat4.create();
   
   this.trIn = this.addInputPin("Transform In", [], this, true, VVVV.PinTypes.Transform);
   this.xIn = this.addInputPin("X", [0.0], this);
@@ -60,15 +62,14 @@ VVVV.Nodes.Rotate = function(id, graph) {
       var y = parseFloat(this.inputPins["Y"].getValue(i));
       var z = parseFloat(this.inputPins["Z"].getValue(i));
       
-      var t = mat4.create();
-      mat4.identity(t);
+      var t = glm.mat4.create();
       
-      mat4.rotate(t, y*Math.PI*2, [0, 1, 0]);
-      mat4.rotate(t, x*Math.PI*2, [1, 0, 0]);
-      mat4.rotate(t, z*Math.PI*2, [0, 0, 1]);
+      glm.mat4.rotate(t, t, y*Math.PI*2, [0, 1, 0]);
+      glm.mat4.rotate(t, t, x*Math.PI*2, [1, 0, 0]);
+      glm.mat4.rotate(t, t, z*Math.PI*2, [0, 0, 1]);
       
       if (this.trIn.isConnected())
-        mat4.multiply(transformin, t, t);
+        glm.mat4.multiply(t, transformin, t);
       
       this.trOut.setValue(i, t);
     }
@@ -96,7 +97,7 @@ VVVV.Nodes.Translate = function(id, graph) {
     compatibility_issues: []
   };
   
-  var ident = mat4.identity(mat4.create());
+  var ident = glm.mat4.create();
   
   this.trIn = this.addInputPin("Transform In", [], this, true, VVVV.PinTypes.Transform);
   this.xIn = this.addInputPin("X", [0.0], this);
@@ -115,14 +116,14 @@ VVVV.Nodes.Translate = function(id, graph) {
 			var y = parseFloat(this.yIn.getValue(i));
 			var z = parseFloat(this.zIn.getValue(i));
 			
-			var t = mat4.create();
-			mat4.identity(t);
+			var t = glm.mat4.create();
 			
-			mat4.translate(t, [x, y, z]);
+			glm.mat4.translate(t, t, [x, y, z]);
+			
 			if (this.trIn.isConnected())
 			{
 				var transformin = this.trIn.getValue(i);
-				mat4.multiply(transformin, t, t);
+				glm.mat4.multiply(t, transformin, t);
 			}
 			
 			this.trOut.setValue(i, t);
@@ -151,7 +152,7 @@ VVVV.Nodes.Scale = function(id, graph) {
     compatibility_issues: []
   };
   
-  var ident = mat4.identity(mat4.create());
+  var ident = glm.mat4.create();
   
   this.trIn = this.addInputPin("Transform In", [], this, true, VVVV.PinTypes.Transform);
   this.xIn = this.addInputPin("X", [1.0], this);
@@ -169,15 +170,13 @@ VVVV.Nodes.Scale = function(id, graph) {
       var y = parseFloat(this.inputPins["Y"].getValue(i));
       var z = parseFloat(this.inputPins["Z"].getValue(i));
       
-      var t = mat4.create();
-      mat4.identity(t);
-      
-      mat4.scale(t, [x, y, z]);
+      var t = glm.mat4.create();
+      glm.mat4.scale(t, t, [x, y, z]);
 	
   		if (this.inputPins["Transform In"].isConnected())
   		{
   			var transformin = this.inputPins["Transform In"].getValue(i);
-  			mat4.multiply(transformin, t, t);
+  			glm.mat4.multiply(t, transformin, t);
   		}
 	    
       this.trOut.setValue(i, t);
@@ -206,7 +205,7 @@ VVVV.Nodes.Perspective = function(id, graph) {
     compatibility_issues: ['Not spreadable']
   };
   
-  var ident = mat4.identity(mat4.create());
+  var ident = glm.mat4.create();
   
 
   this.addInputPin("Transform In", [], this, true, VVVV.PinTypes.Transform);
@@ -222,14 +221,13 @@ VVVV.Nodes.Perspective = function(id, graph) {
     var near = parseFloat(this.inputPins["Near Plane"].getValue(0));
     var far = parseFloat(this.inputPins["Far Plane"].getValue(0));
     
-    var t = mat4.create();
-    mat4.identity(t);   
-    mat4.perspective(fov*360, 1, near, far, t);
+    var t = glm.mat4.create();
+    glm.mat4.perspective(fov*360, 1, near, far, t);
   
     if (this.inputPins["Transform In"].isConnected())
     {
      	var transformin = this.inputPins["Transform In"].getValue(i);
-     	mat4.multiply(transformin, t, t);
+     	glm.mat4.multiply(t, transformin, t);
     }
 
     this.outputPins["Transform Out"].setValue(0, t);

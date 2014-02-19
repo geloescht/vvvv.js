@@ -13,7 +13,8 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
-var identity = mat4.identity(mat4.create());
+var glm = require('../lib/glMatrix-2.0.min');
+var identity = glm.mat4.identity(glm.mat4.create());
 
 VVVV.Types.WebGlRenderState = function() {
   this.alphaBlending = true;
@@ -1404,7 +1405,7 @@ VVVV.Nodes.Quad = function(id, graph) {
       fragmentShaderCode += "precision highp float;\n";
       fragmentShaderCode += "#endif\n";
       fragmentShaderCode += "uniform vec4 col : COLOR = {1.0, 1.0, 1.0, 1.0}; varying vec2 vs2psTexCd; uniform sampler2D Samp0; void main(void) { gl_FragColor = col*texture2D(Samp0, vs2psTexCd); if (gl_FragColor.a==0.0) discard;  }";
-      var vertexShaderCode = "attribute vec3 PosO : POSITION; attribute vec2 TexCd : TEXCOORD0; uniform mat4 tW : WORLD; uniform mat4 tV : VIEW; uniform mat4 tP : PROJECTION; uniform mat4 tTex; varying vec2 vs2psTexCd; void main(void) { gl_Position = tP * tV * tW * vec4(PosO, 1.0); vs2psTexCd = (tTex * vec4(TexCd.xy-.5, 0.0, 1.0)).xy+.5; }";
+      var vertexShaderCode = "attribute vec3 PosO : POSITION; attribute vec2 TexCd : TEXCOORD0; uniform glm.mat4 tW : WORLD; uniform glm.mat4 tV : VIEW; uniform glm.mat4 tP : PROJECTION; uniform glm.mat4 tTex; varying vec2 vs2psTexCd; void main(void) { gl_Position = tP * tV * tW * vec4(PosO, 1.0); vs2psTexCd = (tTex * vec4(TexCd.xy-.5, 0.0, 1.0)).xy+.5; }";
       
       shader = new VVVV.Types.ShaderProgram();
       shader.extractSemantics(fragmentShaderCode + vertexShaderCode);
@@ -1788,17 +1789,17 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
   
     if (projIn.pinIsChanged()) {
       if (projIn.isConnected()) {
-        pMatrix = mat4.create();
-        mat4.set(projIn.getValue(0), pMatrix);
-        mat4.scale(pMatrix, [1, 1, -1]);
+        pMatrix = glm.mat4.create();
+        glm.mat4.set(projIn.getValue(0), pMatrix);
+        glm.mat4.scale(pMatrix, [1, 1, -1]);
       }
       else {
-        pMatrix = mat4.create();
-        mat4.ortho(-1, 1, -1, 1, -100, 100, pMatrix);
-        mat4.scale(pMatrix, [1, 1, -1]);
+        pMatrix = glm.mat4.create();
+        glm.mat4.ortho(-1, 1, -1, 1, -100, 100, pMatrix);
+        glm.mat4.scale(pMatrix, [1, 1, -1]);
       }
       if (this.renderContexts && this.renderContexts[0]) // flip the output texture, if connected to downstream renderer
-        mat4.scale(pMatrix, [1, -1, 1]);
+        glm.mat4.scale(pMatrix, [1, -1, 1]);
     }
     if (viewIn.pinIsChanged()) {
       vMatrix = viewIn.getValue(0);
