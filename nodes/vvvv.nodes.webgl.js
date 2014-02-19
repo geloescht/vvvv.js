@@ -3,6 +3,16 @@
 // VVVV.js is freely distributable under the MIT license.
 // Additional authors of sub components are mentioned at the specific code locations.
 
+//AMD compatibility
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
+
 VVVV.ShaderCodeResources = {};
 VVVV.Types.ShaderCodeResource = function() {
   var sourceCode = '';
@@ -2223,3 +2233,5 @@ VVVV.Nodes.DefineEffect = function(id, graph) {
 
 }
 VVVV.Nodes.DefineEffect.prototype = new VVVV.Core.Node();
+
+}});

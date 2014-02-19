@@ -6,23 +6,33 @@
 /** @define {string} */
 var VVVV_ENV = 'development';
 
+//AMD compatibility
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) {
+
+//actual code begins here
 
 // some prerequisites ...
+/*
 $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
   if ( options.dataType == 'script' || originalOptions.dataType == 'script' ) {
       options.cache = true;
   }
-});
+});*/
 
-if(!window.console) {
-  window.console = {
+if(!console) {
+  console = {
     log : function(str) {
     }
   };
 }
 
 // actual VVVV.js initialization code
-VVVV = {};
+var VVVV = {};
 VVVV.Config = {};
 VVVV.Config.auto_undo = false;
 VVVV.Nodes = {};
@@ -36,17 +46,6 @@ VVVV.onNotImplemented = function(nodename) {
   console.log("Warning: "+nodename+" is not implemented.");
 };
 
-VVVV.loadCounter = 0;
-VVVV.loadScript = function(url, callback) {
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.async = false;
-    script.src = VVVV.Root + '/' +url;
-    if (callback)
-      script.addEventListener('load', callback);
-    VVVV.loadCounter++;
-    head.appendChild(script);
-};
 
 /**
  * Adds the neccessary JavaScripts to the head, calls the callback once everything is in place.
@@ -54,60 +53,57 @@ VVVV.loadScript = function(url, callback) {
  * @param {String} mode. Can be either "full", "vvvviewer" or "run". Depends on what you want to do 
  * @param {Function} callback will be called once all the scripts and initialisations have been finished.
  */
-VVVV.init = function (path_to_vvvv, mode, callback) {
-  VVVV.Root = path_to_vvvv || './';
+VVVV.init = function (mode, callback) {
+  VVVV.Root = require.toUrl('.');
 
   if (VVVV_ENV=='development') console.log('loading vvvv.js ...');
 
   if (VVVV_ENV=='development') {
-    var head = document.getElementsByTagName('head')[0];
   
-    function loadMonitor(event) {
-      event.target.removeEventListener('load', loadMonitor);
-      if (--VVVV.loadCounter <= 0) {
-        initialisationComplete();
-      };
+    //Use relative paths within VVVV.js so requireJS's baseUrl parameter can be set to anything
+    require('./thirdparty')(VVVV);
+    require('./lib/underscore/underscore-min');
+    
+    //Collect all the packages we need to load
+    var packages = ['./core/vvvv.core'];
+    if (mode=='run' || mode=='full') {
+      require('./lib/glMatrix-0.9.5.min');
+      packages = packages.concat(['./mainloop/vvvv.mainloop', 
+                                  './mainloop/vvvv.dominterface', 
+                                  './nodes/vvvv.nodes.value', 
+                                  './nodes/vvvv.nodes.string', 
+                                  './nodes/vvvv.nodes.boolean', 
+                                  './nodes/vvvv.nodes.color', 
+                                  './nodes/vvvv.nodes.spreads', 
+                                  './nodes/vvvv.nodes.animation', 
+                                  './nodes/vvvv.nodes.network', 
+                                  './nodes/vvvv.nodes.system', 
+                                  './nodes/vvvv.nodes.canvas', 
+                                  './nodes/vvvv.nodes.html5', 
+                                  './nodes/vvvv.nodes.transform', 
+                                  './nodes/vvvv.nodes.vectors', 
+                                  './nodes/vvvv.nodes.webgl', 
+                                  './nodes/vvvv.nodes.complex', 
+                                  './nodes/vvvv.nodes.enumerations', 
+                                  './nodes/vvvv.nodes.2d', 
+                                  './nodes/vvvv.nodes.3d', 
+                                  './nodes/vvvv.nodes.node', 
+                                  './nodes/vvvv.nodes.astronomy', 
+                                  './nodes/vvvv.nodes.xml' ]);
+    }
+    if (mode=='vvvviewer' || mode=='full') {
+      require('./lib/d3-v3/d3.v3.min');
     }
     
-    if ($('script[src*=thirdparty]').length==0)
-      VVVV.loadScript('thirdparty.js', loadMonitor);
-    if ($('script[src*=underscore]').length==0)
-      VVVV.loadScript('lib/underscore/underscore-min.js', loadMonitor);
-    if ($('script[src*="d3.js"]').length==0 && (mode=='full' || mode=='vvvviewer'))
-      VVVV.loadScript('lib/d3-v3/d3.v3.min.js', loadMonitor);
-    if ($('script[src*=glMatrix]').length==0 && (mode=='full' || mode=='run'))
-      VVVV.loadScript('lib/glMatrix-0.9.5.min.js', loadMonitor);
-  
-    if ($('script[src*="vvvv.core.js"]').length==0) {
-      VVVV.loadScript('core/vvvv.core.js', loadMonitor);
-      if (mode=='run' || mode=='full') {
-        VVVV.loadScript('mainloop/vvvv.mainloop.js', loadMonitor);
-        VVVV.loadScript('mainloop/vvvv.dominterface.js', loadMonitor);
-  
-        VVVV.loadScript('nodes/vvvv.nodes.value.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.string.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.boolean.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.color.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.spreads.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.spectral.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.animation.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.network.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.system.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.canvas.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.html5.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.transform.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.vectors.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.webgl.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.complex.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.enumerations.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.2d.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.3d.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.node.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.astronomy.js', loadMonitor);
-        VVVV.loadScript('nodes/vvvv.nodes.xml.js', loadMonitor);
-      }
-      VVVV.loadScript('editors/vvvv.editors.browser_editor.js', loadMonitor);
-    }
+    require(packages, function()
+    {
+      //Run all packages on the VVVV object
+      for(var i = 0; i < arguments.length; i++)
+        arguments[i](VVVV);
+      
+      initialisationComplete();
+    });
+    
   }
 
   function initialisationComplete() {
@@ -138,6 +134,8 @@ VVVV.init = function (path_to_vvvv, mode, callback) {
     initialisationComplete();
 };
 
+return VVVV;
 
+});
 
 
