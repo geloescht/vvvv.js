@@ -12,17 +12,25 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
+// define libs for browser
+else
+{
+  require = require.config(
+  {
+    paths:
+    {
+      'underscore': './lib/underscore/underscore-min',
+      'gl-matrix' : './lib/glMatrix-2.0.min',
+      'jquery'    : './lib/jquery/jquery-1.8.2.min'
+    }
+  });
+}
+
 define(function(require) {
 
 //actual code begins here
 
-// some prerequisites ...
-/*
-$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
-  if ( options.dataType == 'script' || originalOptions.dataType == 'script' ) {
-      options.cache = true;
-  }
-});*/
+var hostName = (typeof window != 'undefined' && window.window === window) ? 'browser' : 'node';
 
 if(!console) {
   console = {
@@ -46,7 +54,6 @@ VVVV.onNotImplemented = function(nodename) {
 
 /**
  * Adds the neccessary JavaScripts to the head, calls the callback once everything is in place.
- * @param {String} path_to_vvvv points to the folder of your vvvv.js. This is relative to your html-file
  * @param {String} mode. Can be either "full", "vvvviewer" or "run". Depends on what you want to do 
  * @param {Function} callback will be called once all the scripts and initialisations have been finished.
  */
@@ -55,14 +62,10 @@ VVVV.init = function (mode, callback) {
 
   if (VVVV_ENV=='development') console.log('loading vvvv.js ...');
 
-  if (VVVV_ENV=='development') {
-  
-    //Use relative paths within VVVV.js so requireJS's baseUrl parameter can be set to anything
-    require('./thirdparty')(VVVV);
-    require('./lib/underscore/underscore-min');
-    
+  if (VVVV_ENV=='development') {  
     //Collect all the packages we need to load
-    var packages = ['./core/vvvv.core', './core/vvvv.core.vvvvconnector'];
+    //Use relative paths within VVVV.js so requireJS's baseUrl parameter can be set to anything
+    var packages = ['./host/vvvv.host.' + hostName, './thirdparty', './core/vvvv.core', './core/vvvv.core.vvvvconnector'];
     if (mode=='run' || mode=='full') {
       packages = packages.concat(['./mainloop/vvvv.mainloop', 
                                   './mainloop/vvvv.dominterface', 
@@ -104,13 +107,14 @@ VVVV.init = function (mode, callback) {
   }
 
   function initialisationComplete() {
-    console.log(VVVV);
     var p = new VVVV.Core.Patch('');
-    _(VVVV.Nodes).each(function(n) {
+    for(var nodeName in VVVV.Nodes)
+    {
+      var n = VVVV.Nodes[nodeName];
       var x = new n(0, p);
       if (VVVV_ENV=='development') console.log("Registering "+x.nodename);
       VVVV.NodeLibrary[x.nodename.toLowerCase()] = n;
-    });
+    }
 
     if (VVVV_ENV=='development') console.log('done ...');
 

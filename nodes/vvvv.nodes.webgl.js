@@ -13,7 +13,8 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
-var glm = require('../lib/glMatrix-2.0.min');
+var glm = require('gl-matrix');
+var _ = require('underscore');
 var identity = glm.mat4.identity(glm.mat4.create());
 
 VVVV.Types.WebGlRenderState = function() {
