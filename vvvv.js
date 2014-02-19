@@ -67,7 +67,6 @@ VVVV.init = function (mode, callback) {
     //Collect all the packages we need to load
     var packages = ['./core/vvvv.core'];
     if (mode=='run' || mode=='full') {
-      require('./lib/glMatrix-0.9.5.min');
       packages = packages.concat(['./mainloop/vvvv.mainloop', 
                                   './mainloop/vvvv.dominterface', 
                                   './nodes/vvvv.nodes.value', 
