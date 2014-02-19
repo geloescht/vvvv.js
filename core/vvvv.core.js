@@ -3,6 +3,16 @@
 // VVVV.js is freely distributable under the MIT license.
 // Additional authors of sub components are mentioned at the specific code locations.
 
+//AMD compatibility
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
+
 VVVV.Types = {}
 
 VVVV.MousePositions = {'_all': {'x': 0.0, 'y': 0.0, 'wheel': 0.0, 'lb': 0.0, 'mb': 0.0, 'rb': 0.0}}
@@ -1028,3 +1038,5 @@ VVVV.Core = {
   
 }
 VVVV.Core.Patch.prototype = new VVVV.Core.Node();
+
+}});

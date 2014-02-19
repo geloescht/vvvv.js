@@ -3,8 +3,18 @@
 // VVVV.js is freely distributable under the MIT license.
 // Additional authors of sub components are mentioned at the specific code locations.
 
+//AMD compatibility
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
+/*
 if (!WebSocket && MozWebSocket)
-  var WebSocket = MozWebSocket;
+  var WebSocket = MozWebSocket;*/
 
 VVVV.Core.VVVVConnector = function() {
   
@@ -141,3 +151,5 @@ VVVV.Nodes.VVVVJsConnector = function(id, graph) {
   this.constructor(id, "VVVVJsConnector (VVVVjs)", graph);
 }
 VVVV.Nodes.VVVVJsConnector.prototype = new VVVV.Core.Node();
+
+}});

@@ -1,4 +1,12 @@
+//AMD compatibility
 
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
 
 
 VVVV.VVVViewer = function(graph, selector) {
@@ -269,4 +277,6 @@ VVVV.VVVViewer = function(graph, selector) {
   graph.afterUpdate = this.drawComplete;
   
 }
+
+}});
 

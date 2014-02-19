@@ -1,3 +1,12 @@
+//AMD compatibility
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
 
 VVVV.Core.MainLoop = function(patch, frames_per_second) {
   
@@ -52,3 +61,5 @@ VVVV.Core.MainLoop = function(patch, frames_per_second) {
   
 
 }
+
+}});

@@ -1,4 +1,12 @@
+//AMD compatibility
 
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
 
 VVVV.Core.DOMInterface = function(patch) {
 
@@ -183,3 +191,5 @@ VVVV.Core.DOMInterface = function(patch) {
   }
 
 }
+
+}});
