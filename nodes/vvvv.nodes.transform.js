@@ -222,7 +222,8 @@ VVVV.Nodes.Perspective = function(id, graph) {
     var far = parseFloat(this.inputPins["Far Plane"].getValue(0));
     
     var t = glm.mat4.create();
-    glm.mat4.perspective(fov*360, 1, near, far, t);
+    
+    glm.mat4.perspective(t, fov*Math.PI*2, 1, near, far);
   
     if (this.inputPins["Transform In"].isConnected())
     {
