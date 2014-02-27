@@ -1337,5 +1337,6 @@ VVVV.Core = {
   
 }
 VVVV.Core.Patch.prototype = new VVVV.Core.Node();
+VVVV.Core.Pin.Direction = PinDirection;
 
 }});
