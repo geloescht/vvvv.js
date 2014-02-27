@@ -49,6 +49,11 @@ VVVV.Host =
     parseXML: function(code)
     {
       return $(code);
+    },
+    
+    get $()
+    {
+      return $;
     }
   },
   

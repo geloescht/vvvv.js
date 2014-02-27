@@ -43,6 +43,11 @@ VVVV.Host =
     {
       var cheerio = require('cheerio');
       return cheerio.load(code, {xmlMode: true, lowerCaseTags: true}).root();
+    },
+    
+    get $()
+    {
+      return require('cheerio');
     }
   },
   
