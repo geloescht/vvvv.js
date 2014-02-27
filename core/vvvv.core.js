@@ -759,6 +759,7 @@ VVVV.Core = {
     
     this.doLoad = function(xml, ready_callback) {
       var $xml = VVVV.Host.Markup.parseXML(xml);
+      var $ = VVVV.Host.Markup.$;
       var p = this;
       do {
         p.dirty = true;
