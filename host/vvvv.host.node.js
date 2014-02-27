@@ -54,6 +54,11 @@ VVVV.Host =
   onInitialisationComplete: function(VVVV)
   {
     //process command line options etc.
+  },
+  
+  requestAnimationFrame: function(cb, t)
+  {
+    setTimeout(cb, t);
   }
 };
 
