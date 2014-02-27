@@ -17,6 +17,8 @@ define(function(require) { return function(VVVV) {
 require('jquery');
 var $ = jQuery.noConflict();
 
+// do all host specific startup code here
+
 // some prerequisites ...
 $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
   if ( options.dataType == 'script' || originalOptions.dataType == 'script' ) {
@@ -38,7 +40,7 @@ VVVV.Host =
   {
     read: function(name, cb)
     {
-      
+      $.get(name, cb, 'text');
     }
   },
   

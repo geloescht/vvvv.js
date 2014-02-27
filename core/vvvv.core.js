@@ -987,16 +987,12 @@ VVVV.Core = {
     if (/\.v4p[^<>\s]*$/.test(ressource)) {
       this.nodename = ressource;
       var that = this;
-      $.ajax({
-        url: ressource,
-        type: 'get',
-        dataType: 'text',
-        success: function(r) {
-          that.doLoad(r);
-          if (that.success)
-            that.success();
-          that.afterUpdate();
-        }
+      VVVV.Host.FileSystem.read(ressource, function(r)
+      {
+        that.doLoad(r);
+        if (that.success)
+          that.success();
+        that.afterUpdate();
       });
     }
     else if (/^ws:\/\//.test(ressource)) {

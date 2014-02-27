@@ -14,6 +14,8 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
+//do all host specific startup code here
+
 var fs = require('fs');
   
 VVVV.Host =
@@ -30,7 +32,8 @@ VVVV.Host =
   {
     read: function(name, cb)
     {
-      return fs.readFile(name, sb);
+      //FIXME: error handling
+      return fs.readFile(name, { encoding: 'utf8' }, function(err, data) { cb(data); });
     }
   },
   
