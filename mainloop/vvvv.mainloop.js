@@ -33,7 +33,7 @@ VVVV.Core.MainLoop = function(patch, frames_per_second) {
       measureStart = start;
     }
     if (run) // && framecount<=150)
-      window.setTimeout(update, Math.max(0, Math.round(1000/fps-elapsed)));
+      VVVV.Host.requestAnimationFrame(update, Math.max(0, Math.round(1000/fps-elapsed)));
   }
   
   this.stop = function() {

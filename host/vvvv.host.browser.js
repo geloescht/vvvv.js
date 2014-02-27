@@ -25,6 +25,44 @@ $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
       options.cache = true;
   }
 });
+
+
+
+var lT = 0,
+    a = ['ms', 'moz', 'webkit', 'o'],
+    i = a.length,
+    requestAnimationFrame = window.requestAnimationFrame,
+    cancelAnimationFrame = window.cancelAnimationFrame;
+
+
+while( --i > -1 && !requestAnimationFrame )
+{
+  requestAnimationFrame = window[a[i]+'RequestAnimationFrame'];
+  cancelAnimationFrame = window[a[i]+'CancelAnimationFrame'] || window[a[i]+'CancelRequestAnimationFrame'];
+}
+
+if (!requestAnimationFrame)
+{
+  requestAnimationFrame = function(callback, element)
+  {
+    var cT = new Date().getTime(),
+    tTC = Math.max(0, 16 - (cT - lT)),
+    id = w.setTimeout(function() { callback(cT + tTC); },tTC);
+    lT = cT + tTC;
+    return id;
+  };
+}
+
+requestAnimationFrame = requestAnimationFrame.bind(window);
+cancelAnimationFrame = cancelAnimationFrame.bind(window);
+
+if ( !cancelAnimationFrame )
+{
+  cancelAnimationFrame = function(id)
+  {
+    clearTimeout(id);
+  };
+}
   
 VVVV.Host =
 {
@@ -66,6 +104,11 @@ VVVV.Host =
       });
       VVVV.Patches.push(p);
     });
+  },
+  
+  requestAnimationFrame: function(cb, t)
+  {
+    requestAnimationFrame(cb, t);
   }
 };
 
