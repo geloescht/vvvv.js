@@ -52,7 +52,7 @@ VVVV.Core.MainLoop = function(patch, frames_per_second) {
   
   update();
   
-  $(window).keydown(function(e) {
+  VVVV.Host.Input.on('keydown', function(e) {
   
     // ctrl + alt + F to print framerate
     if ((e.which==102 || e.which==70) && e.altKey && e.ctrlKey)
