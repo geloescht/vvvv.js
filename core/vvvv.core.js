@@ -1276,23 +1276,12 @@ VVVV.Core = {
       if (this.parentPatch)
         path = VVVV.Helpers.prepareFilePath(ressource, this.parentPatch)
       if (!VVVV.Patches[path]) {
-        $.ajax({
-          url: path,
-          type: 'get',
-          dataType: 'text',
-          success: function(r) {
-            that.doLoad(r, function() {
-              VVVV.Patches[path] = VVVV.Patches[path] || [];
-              VVVV.Patches[path].push(that);
-              if (that.success)
-                that.success();
-              that.afterUpdate();
-            });
-          },
-          error: function() {
-            if (that.error)
-              that.error();
-          }
+        VVVV.Host.FileSystem.read(ressource, function(r)
+        {
+          that.doLoad(r);
+          if (that.success)
+            that.success();
+          that.afterUpdate();
         });
       }
       else {
