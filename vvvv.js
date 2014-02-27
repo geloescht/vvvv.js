@@ -122,14 +122,8 @@ VVVV.init = function (mode, callback) {
     if (VVVV_ENV=='development') console.log('done ...');
 
     VVVV.MainLoops = [];
-
-    $("script[language='VVVV']").each(function(i) {
-      var p = new VVVV.Core.Patch($(this).attr('src'), function() {
-        var m = new VVVV.Core.MainLoop(this);
-        VVVV.MainLoops.push(m);
-      });
-      VVVV.Patches[i] = p;
-    });
+    
+    VVVV.Host.onInitialisationComplete(VVVV);
 
     if (typeof callback === 'function') callback.call();
   }
