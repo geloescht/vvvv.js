@@ -47,19 +47,19 @@ VVVV.Nodes.MouseGlobal = function(id, graph) {
   var mb = 0;
   var rb = 0;
   
-  $(document).mousemove(function(e) {
+  VVVV.Host.Input.on('mousemove', function(e) {
     x = e.pageX*2/parseInt($('body').css('width')) - 1;
     y = -(e.pageY*2/parseInt($('body').css('height')) - 1);
   });
   
-  $(document).bind('mousewheel', function(e) {
+  VVVV.Host.Input.on('mousewheel', function(e) {
     wheel += e.originalEvent.wheelDelta/120;
   });
-  $(document).bind('DOMMouseScroll', function(e) {
+  VVVV.Host.Input.on('DOMMouseScroll', function(e) {
     wheel += -e.originalEvent.detail/3;
   });
   
-  $(document).mousedown(function(e) {
+  VVVV.Host.Input.on('mousedown', function(e) {
     switch (e.which) {
       case 1: lb = 1; break;
       case 2: mb = 1; break;
@@ -67,7 +67,7 @@ VVVV.Nodes.MouseGlobal = function(id, graph) {
     }
   });
   
-  $(document).mouseup(function(e) {
+  VVVV.Host.Input.on('mouseup', function(e) {
     switch (e.which) {
       case 1: lb = 0; break;
       case 2: mb = 0; break;
