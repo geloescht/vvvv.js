@@ -51,6 +51,62 @@ VVVV.Host =
     }
   },
   
+  Graphics:
+  {
+    getContext: function(type, options, selector)
+    {
+      var canvas;
+      var w = options.width;
+      var h = options.height;
+      w = w > 0 ? w : 512;
+      h = h > 0 ? h : 512;
+      switch(type)
+      {
+        case 'webgl':
+        case 'experimental-webgl':
+          var WebGL = require('node-webgl');
+          var doc = WebGL.document();
+          canvas = doc.createElement('canvas', w, h);
+          this.WebGLImage = WebGL.Image;
+          VVVV.Host.requestAnimationFrame = doc.requestAnimationFrame.bind(doc);
+        break;
+        
+        case '2d':
+        break;
+          var Canvas = require('canvas');
+          canvas = new Canvas(w, h);
+          this.CanvasImage = Canvas.Image;
+        default:
+        //throw unknown context type
+      }
+      
+      if (!canvas)
+        return;
+        
+      //attachMouseEvents(canvas);
+      
+      var canvasCtx;
+      try {
+        canvasCtxt = canvas.getContext(type, options);
+        canvasCtxt.viewportWidth = parseInt(canvas.width);
+        canvasCtxt.viewportHeight = parseInt(canvas.height);
+      } catch (e) {
+        console.log(e);
+      }
+      return canvasCtxt;
+    },
+    
+    get WebGLImage()
+    {
+      return require('node-webgl').Image;
+    },
+    
+    get CanvasImage()
+    {
+      return require('canvas').Image;
+    }
+  },
+  
   onInitialisationComplete: function(VVVV)
   {
     //process command line options etc.

@@ -997,20 +997,10 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
   this.getContext = function() {
 
     var selector = this.invisiblePins["Descriptive Name"].getValue(0);
-    var targetElement = $(selector).get(0);
-    if (!targetElement || targetElement.nodeName!='CANVAS') {
-      var w = parseInt(bufferWidthIn.getValue(0));
-      var h = parseInt(bufferHeightIn.getValue(0));
-      w = w > 0 ? w : 512;
-      h = h > 0 ? h : 512;
-      canvas = $('<canvas width="'+w+'" height="'+h+'" id="vvvv-js-generated-renderer-'+(new Date().getTime())+'" class="vvvv-js-generated-renderer"></canvas>');
-      if (!targetElement) targetElement = 'body';
-      $(targetElement).append(canvas);
-      canvas = canvas.get(0);
-    }
-    else
-      canvas = targetElement;
-
+    ctx = VVVV.Host.Graphics.getContext('2d', { width: bufferWidthIn, height: bufferHeightIn }, selector);
+    canvas = ctx.canvas;
+    canvas.ctx = ctx;
+    
     canvasWidth = canvas.width;
     canvasHeight = canvas.height;
     
@@ -1018,10 +1008,6 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
       return;
       
     attachMouseEvents(canvas);
-    
-    ctx = canvas.getContext('2d');
-    canvas.ctx = ctx;
-    
   }
   
   this.destroy = function() {
