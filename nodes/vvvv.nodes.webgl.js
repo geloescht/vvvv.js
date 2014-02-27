@@ -316,7 +316,7 @@ VVVV.Nodes.FileTexture = function(id, graph) {
         if (filename.indexOf('http://')===0 && VVVV.ImageProxyPrefix!==undefined)
           filename = VVVV.ImageProxyPrefix+encodeURI(filename);
         textures[i] = gl.createTexture();
-        textures[i].image = new Image();
+        textures[i].image = new VVVV.Host.Graphics.WebGLImage();
         textures[i].image.onload = (function(j) {
           return function() {  // this is to create a new scope within the loop. see "javascript closure in for loops" http://www.mennovanslooten.nl/blog/post/62
             gl.bindTexture(gl.TEXTURE_2D, textures[j]);
@@ -1629,33 +1629,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
     if (!this.invisiblePins["Descriptive Name"])
       return;
     var selector = this.invisiblePins["Descriptive Name"].getValue(0);
-    var targetElement = $(selector).get(0);
-    var canvas;
-    if (!targetElement || targetElement.nodeName!='CANVAS') {
-      var w = parseInt(bufferWidthIn.getValue(0));
-      var h = parseInt(bufferHeightIn.getValue(0));
-      w = w > 0 ? w : 512;
-      h = h > 0 ? h : 512;
-      canvas = $('<canvas width="'+w+'" height="'+h+'" id="vvvv-js-generated-renderer-'+(new Date().getTime())+'" class="vvvv-js-generated-renderer"></canvas>');
-      if (!targetElement) targetElement = 'body';
-      $(targetElement).append(canvas);
-    }
-    else
-      canvas = $(targetElement);
-    
-    if (!canvas)
-      return;
-      
-    attachMouseEvents(canvas);
-
-    try {
-      canvasCtxt = canvas.get(0).getContext("experimental-webgl", {preserveDrawingBuffer: true});
-      canvasCtxt.viewportWidth = parseInt(canvas.get(0).width);
-      canvasCtxt.viewportHeight = parseInt(canvas.get(0).height);
-    } catch (e) {
-      console.log(e);
-    }
-    this.ctxt = canvasCtxt;
+    this.ctxt = VVVV.Host.Graphics.getContext("experimental-webgl", {preserveDrawingBuffer: true, width: bufferWidthIn, height: bufferHeightIn}, selector);
 
     if (ex9Out.isConnected() && this.renderContexts && this.renderContexts[0]) {
       this.ctxt = this.renderContexts[0];
@@ -1664,8 +1638,8 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
       
       bbufFramebuffer = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, bbufFramebuffer);
-      bbufFramebuffer.width = canvas.get(0).width;
-      bbufFramebuffer.height = canvas.get(0).height;
+      bbufFramebuffer.width = this.ctxt.canvas.width;
+      bbufFramebuffer.height = this.ctxt.canvas.height;
 
       bbufTexture = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, bbufTexture);
@@ -1700,8 +1674,8 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
       return;
       
     // doing this afterwards, so we can use these values in the patch for checking, if webgl context was set up correctly
-    width = parseInt(canvas.get(0).width);
-    height = parseInt(canvas.get(0).height);
+    width = parseInt(this.ctxt.canvas.width);
+    height = parseInt(this.ctxt.canvas.height);
     
     // create default white texture
     
