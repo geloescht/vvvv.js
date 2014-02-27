@@ -35,7 +35,7 @@ VVVV.Types.ShaderCodeResource = function() {
 
 var glm = require('gl-matrix');
 var _ = require('underscore');
-var identity = glm.mat4.identity(glm.mat4.create());
+var identity = glm.mat4.create();
 
 VVVV.Types.WebGlRenderState = function() {
   this.alphaBlending = true;
@@ -2025,16 +2025,16 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
     if (projIn.pinIsChanged()) {
       if (projIn.isConnected()) {
         pMatrix = glm.mat4.create();
-        glm.mat4.set(projIn.getValue(0), pMatrix);
-        glm.mat4.scale(pMatrix, [1, 1, -1]);
+        glm.mat4.copy(pMatrix, projIn.getValue(0));
+        glm.mat4.scale(pMatrix, pMatrix, [1, 1, -1]);
       }
       else {
         pMatrix = glm.mat4.create();
         glm.mat4.ortho(-1, 1, -1, 1, -100, 100, pMatrix);
-        glm.mat4.scale(pMatrix, [1, 1, -1]);
+        glm.mat4.scale(pMatrix, pMatrix, [1, 1, -1]);
       }
       if (this.renderContexts && this.renderContexts[0]) // flip the output texture, if connected to downstream renderer
-        glm.mat4.scale(pMatrix, [1, -1, 1]);
+        glm.mat4.scale(pMatrix, pMatrix, [1, -1, 1]);
     }
     if (viewIn.pinIsChanged()) {
       vMatrix = viewIn.getValue(0);
