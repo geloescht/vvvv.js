@@ -107,7 +107,7 @@ VVVV.PinTypes.WebGlResource = {
   reset_on_disconnect: true,
   connectionChangedHandlers: {
     "webglresource": function() {
-      if (this.direction==PinDirection.Input)
+      if (this.direction==VVVV.Core.Pin.Direction.Input)
         return;
       var that = this.node
       var renderers = that.findDownstreamNodes('Renderer (EX9)');
