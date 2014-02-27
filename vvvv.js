@@ -120,14 +120,8 @@ VVVV.init = function (mode, callback) {
 
     VVVV.Patches = [];
     VVVV.MainLoops = [];
-
-    $("script[language='VVVV']").each(function() {
-      var p = new VVVV.Core.Patch($(this).attr('src'), function() {
-        var m = new VVVV.Core.MainLoop(this);
-        VVVV.MainLoops.push(m);
-      });
-      VVVV.Patches.push(p);
-    });
+    
+    VVVV.Host.onInitialisationComplete(VVVV);
 
     if (typeof callback === 'function') callback.call();
   }

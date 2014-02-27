@@ -44,6 +44,11 @@ VVVV.Host =
       var cheerio = require('cheerio');
       return cheerio.load(code, {xmlMode: true, lowerCaseTags: true}).root();
     }
+  },
+  
+  onInitialisationComplete: function(VVVV)
+  {
+    //process command line options etc.
   }
 };
 
