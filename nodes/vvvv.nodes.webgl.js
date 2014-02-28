@@ -377,7 +377,7 @@ VVVV.Nodes.FileTexture = function(id, graph) {
           textures[i].image.src = filename;
         }
         else if (type=="Cube Texture") {
-          textures[i].image = new Image();
+          textures[i].image = new VVVV.Host.Graphics.Image();
           textures[i].image.onload = (function(j) {
             return function() {
               var faces = [
@@ -469,7 +469,7 @@ VVVV.Nodes.DX9Texture = function(id, graph) {
         return;
       if ( (source.width & (source.width-1)) != 0 || (source.height & (source.height-1)) != 0)
         console.log("Warning: Source renderer's width/height is not a power of 2. DX9Texture will most likely not work.");
-      if (source instanceof WebGLTexture) {
+      if (source instanceof gl.WebGLTexture) {
         outputOut.setValue(0, source);
       }
       else {
