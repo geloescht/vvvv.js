@@ -30,10 +30,15 @@ VVVV.Host =
   
   FileSystem:
   {
-    read: function(name, cb)
+    read: function(name, success, error)
     {
-      //FIXME: error handling
-      return fs.readFile(name, { encoding: 'utf8' }, function(err, data) { cb(data); });
+      return fs.readFile(name, { encoding: 'utf8' }, function(err, data)
+      {
+        if(err)
+          error(err);
+        else
+          success(data);
+      });
     }
   },
   

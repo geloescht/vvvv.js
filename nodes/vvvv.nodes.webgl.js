@@ -1284,18 +1284,15 @@ VVVV.Nodes.GenericShader = function(id, graph) {
     if (VVVV.ShaderCodeResources[thatNode.shaderFile]==undefined) {
       VVVV.ShaderCodeResources[thatNode.shaderFile] = new VVVV.Types.ShaderCodeResource();
       VVVV.ShaderCodeResources[thatNode.shaderFile].addRelatedNode(thatNode);
-      $.ajax({
-        url: VVVV.Helpers.prepareFilePath(thatNode.shaderFile, thatNode.parentPatch),
-        async: false,
-        dataType: 'text',
-        success: function(response) {
+      VVVV.Host.FileSystem.read(
+        VVVV.Helpers.prepareFilePath(thatNode.shaderFile, thatNode.parentPatch),
+        function(response) {
           VVVV.ShaderCodeResources[thatNode.shaderFile].setSourceCode(response);
         },
-        error: function() {
+         function() {
           console.log('ERROR: Could not load shader file '+thatNode.shaderFile.replace('%VVVV%', VVVV.Root));
           VVVV.onNotImplemented('Could not load shader file '+thatNode.shaderFile.replace('%VVVV%', VVVV.Root));
-        }
-      });
+        });
     }
     else {
       VVVV.ShaderCodeResources[thatNode.shaderFile].addRelatedNode(thatNode);

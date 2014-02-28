@@ -76,9 +76,9 @@ VVVV.Host =
   
   FileSystem:
   {
-    read: function(name, cb)
+    read: function(name, success, error)
     {
-      $.get(name, cb, 'text');
+      $.get(name, success, 'text').fail(error);
     }
   },
   
