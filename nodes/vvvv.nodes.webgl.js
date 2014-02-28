@@ -353,6 +353,7 @@ VVVV.Nodes.FileTexture = function(id, graph) {
     if (filenamePin.pinIsChanged() || typeIn.pinIsChanged() || this.contextChanged) {
       var type = typeIn.getValue(0);
       var maxSize = this.getMaxInputSliceCount();
+      outputPin.setValue(i, VVVV.defaultTexture);
       for (var i=0; i<maxSize; i++) {
         var filename = VVVV.Helpers.prepareFilePath(filenamePin.getValue(i), this.parentPatch);
         if (filename.indexOf('http://')===0 && VVVV.ImageProxyPrefix!==undefined)
@@ -409,7 +410,6 @@ VVVV.Nodes.FileTexture = function(id, graph) {
           textures[i].image.src = filename;
         }
       
-        outputPin.setValue(i, VVVV.defaultTexture);
       }
       outputPin.setSliceCount(maxSize);
     }

@@ -745,6 +745,7 @@ VVVV.Core = {
           currSlice += v[i];
       }
       result.push(currSlice);
+      result = result.map(function(x) { if(parseInt(x).toString() == x) x = parseInt(x); return x; });
       return result;
     }
     
