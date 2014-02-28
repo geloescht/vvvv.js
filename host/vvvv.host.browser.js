@@ -71,6 +71,9 @@ VVVV.Host =
     on: function(eventName, cb)
     {
       $(window).on(eventName, cb);
+      
+      if(eventName == "resize")
+        $(document).ready(cb);
     }
   },
   
@@ -116,8 +119,6 @@ VVVV.Host =
       
       if (!canvas)
         return;
-        
-      //attachMouseEvents(canvas);
       
       var canvasCtx;
       try {
@@ -127,11 +128,33 @@ VVVV.Host =
       } catch (e) {
         console.log(e);
       }
+      
+      canvasCtxt.canvas.on = function(eventName, cb)
+      {
+        $(this).on(eventName, cb);
+      };
+      
+      canvasCtxt.canvas.destroy = function()
+      {
+        if ($(this).hasClass('vvvv-js-generated-renderer'))
+          $(this).remove();
+      };
+      
       return canvasCtxt;
     },
     
     WebGLImage: Image,
-    CanvasImage: Image
+    CanvasImage: Image,
+    
+    getScreenSize: function()
+    {
+      return { width: $(window).width(), height: $(window).height };
+    },
+    
+    getWorkingAreaSize: function()
+    {
+      return { width: $(document).width(), height: $(document).height };
+    }
   },
   
   onInitialisationComplete: function(VVVV)

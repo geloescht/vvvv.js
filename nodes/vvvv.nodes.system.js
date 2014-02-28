@@ -211,18 +211,11 @@ VVVV.Nodes.ScreenInfo = function(id, graph) {
   var dx = 0;
   var dy = 0;
   
-  $(document).ready(function() {
-    wy = $(window).height();
-    wx = $(window).width();
-    dy = $(document).height();
-    dx = $(document).width();
-  });
-  
-  $(window).resize(function() {
-    wy = $(window).height();
-    wx = $(window).width();
-    dy = $(document).height();
-    dx = $(document).width();
+  VVVV.Host.Input.on("resize", function() {
+    wy = VVVV.Host.Graphics.getScreenSize().height;
+    wx = VVVV.Host.Graphics.getScreenSize().width;
+    dy = VVVV.Host.Graphics.getWorkingAreaSize().height;
+    dx = VVVV.Host.Graphics.getWorkingAreaSize().width;
   });
 
   this.evaluate = function() {

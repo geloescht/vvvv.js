@@ -77,20 +77,29 @@ VVVV.Host =
         break;
         
         case '2d':
-        break;
           var Canvas = require('canvas');
           canvas = new Canvas(w, h);
+          
+          canvas.on = function()
+          {
+            //FIXME
+          };
+          
           this.CanvasImage = Canvas.Image;
+        break;
         default:
         //throw unknown context type
       }
       
       if (!canvas)
         return;
-        
-      //attachMouseEvents(canvas);
       
-      var canvasCtx;
+      canvas.destroy = function()
+      {
+        //FIXME
+      };
+      
+      var canvasCtxt;
       try {
         canvasCtxt = canvas.getContext(type, options);
         canvasCtxt.viewportWidth = parseInt(canvas.width);
@@ -103,12 +112,26 @@ VVVV.Host =
     
     get WebGLImage()
     {
-      return require('node-webgl').Image;
+      VVVV.Graphics.WebGLImage = require('node-webgl').Image;
+      return VVVV.Graphics.WebGLImage;
     },
     
     get CanvasImage()
     {
-      return require('canvas').Image;
+      VVVV.Graphics.CanvasImage = require('canvas').Image;
+      return VVVV.Graphics.CanvasImage;
+    },
+    
+    getScreenSize: function()
+    {
+      //FIXME
+      return { width: 0, height: 0 };
+    },
+    
+    getWorkingAreaSize: function()
+    {
+      //FIXME
+      return { width: 0, height: 0 };
     }
   },
   

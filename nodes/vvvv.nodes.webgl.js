@@ -1798,12 +1798,12 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
   var bbufFramebuffer;
   var bbufTexture;
   
-  function attachMouseEvents() {
-    $(canvas).detach('mousemove');
-    $(canvas).detach('mousedown');
-    $(canvas).detach('mouseup');
+  function attachMouseEvents(canvas) {
+    //$(canvas).detach('mousemove');
+    //$(canvas).detach('mousedown');
+    //$(canvas).detach('mouseup');
     VVVV.MousePositions[canvas.id] = {'x': 0.0, 'y': 0.0, 'wheel': 0.0, 'lb': 0.0, 'mb': 0.0, 'rb': 0.0};
-    $(canvas).mousemove(function(e) {
+    canvas.on('mousemove', function(e) {
       var x = (e.pageX - $(this).offset().left) * 2 / $(this).width() - 1;
       var y = -((e.pageY - $(this).offset().top) * 2 / $(this).height() - 1);
       VVVV.MousePositions['_all'].x = x;
@@ -1811,24 +1811,24 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
       VVVV.MousePositions[canvas.id].x = x;
       VVVV.MousePositions[canvas.id].y = y;
     });
-    $(canvas).bind('mousewheel', function(e) {
+    canvas.on('mousewheel', function(e) {
       var delta = e.originalEvent.wheelDelta/120;
       VVVV.MousePositions[canvas.id].wheel += delta;
       VVVV.MousePositions['_all'].wheel += delta;
     });
-    $(canvas).bind('DOMMouseScroll', function(e) {
+    canvas.on('DOMMouseScroll', function(e) {
       var delta = -e.originalEvent.detail/3;
       VVVV.MousePositions[canvas.id].wheel += delta;
       VVVV.MousePositions['_all'].wheel += delta;
     })
-    $(canvas).mousedown(function(e) {
+    canvas.on('mousedown', function(e) {
       switch (e.which) {
         case 1: VVVV.MousePositions['_all'].lb = 1; VVVV.MousePositions[canvas.id].lb = 1; break;
         case 2: VVVV.MousePositions['_all'].mb = 1; VVVV.MousePositions[canvas.id].mb = 1; break;
         case 3: VVVV.MousePositions['_all'].rb = 1; VVVV.MousePositions[canvas.id].rb = 1; break;
       }
     });
-    $(canvas).mouseup(function(e) {
+    canvas.on('mouseup', function(e) {
       switch (e.which) {
         case 1: VVVV.MousePositions['_all'].lb = 0; VVVV.MousePositions[canvas.id].lb = 0; break;
         case 2: VVVV.MousePositions['_all'].mb = 0; VVVV.MousePositions[canvas.id].mb = 0; break;
@@ -1885,6 +1885,8 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
     if (!this.ctxt)
       return;
       
+    attachMouseEvents(this.ctxt.canvas);
+    
     // doing this afterwards, so we can use these values in the patch for checking, if webgl context was set up correctly
     width = parseInt(this.ctxt.canvas.width);
     height = parseInt(this.ctxt.canvas.height);
@@ -1930,7 +1932,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
   }
   
   this.destroy = function() {
-    $(canvas).remove();
+    canvas.destroy();
   }
   
   var initialized = false;
@@ -1939,8 +1941,8 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
     gl = this.ctxt;
     
     if (this.invisiblePins["Descriptive Name"].pinIsChanged() || this.contextChanged) {
-      if (canvasCtxt && $(canvasCtxt.canvas).hasClass('vvvv-js-generated-renderer'))
-        $(canvasCtxt.canvas).remove();
+      if (canvasCtxt)
+        canvasCtxt.canvas.destroy();
       this.getContexts();
       if (this.inputPins["Layers"].isConnected())
         this.inputPins["Layers"].links[0].fromPin.connectionChanged();
@@ -1959,7 +1961,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
       var w = parseInt(bufferWidthIn.getValue(0));
       if (w>0) {
         width = w;
-        $(canvasCtxt.canvas).attr('width', width);
+        canvasCtxt.canvas.width = width;
         bufferWidthOut.setValue(0, width);
       }
     }
@@ -1967,7 +1969,7 @@ VVVV.Nodes.RendererWebGL = function(id, graph) {
       var h = parseInt(bufferHeightIn.getValue(0));
       if (h>0) {
         height = h;
-        $(canvasCtxt.canvas).attr('height', height);
+        canvasCtxt.canvas.height = height;
         bufferHeightOut.setValue(0, height);
       }
     }

@@ -956,11 +956,11 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
   
   // this is actually some code duplication, because the very same exists in Renderer (EX9)
   function attachMouseEvents(canvas) {
-    $(canvas).detach('mousemove');
-    $(canvas).detach('mousedown');
-    $(canvas).detach('mouseup');
+    //$(canvas).detach('mousemove');
+    //$(canvas).detach('mousedown');
+    //$(canvas).detach('mouseup');
     VVVV.MousePositions[canvas.id] = {'x': 0.0, 'y': 0.0, 'wheel': 0.0, 'lb': 0.0, 'mb': 0.0, 'rb': 0.0};
-    $(canvas).mousemove(function(e) {
+    canvas.on('mousemove', function(e) {
       var x = (e.pageX - $(this).offset().left) * 2 / $(this).width() - 1;
       var y = -((e.pageY - $(this).offset().top) * 2 / $(this).height() - 1);
       VVVV.MousePositions['_all'].x = x;
@@ -968,24 +968,24 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
       VVVV.MousePositions[canvas.id].x = x;
       VVVV.MousePositions[canvas.id].y = y;
     });
-    $(canvas).bind('mousewheel', function(e) {
+    canvas.on('mousewheel', function(e) {
       var delta = e.originalEvent.wheelDelta/120;
       VVVV.MousePositions[canvas.id].wheel += delta;
       VVVV.MousePositions['_all'].wheel += delta;
     });
-    $(canvas).bind('DOMMouseScroll', function(e) {
+    canvas.on('DOMMouseScroll', function(e) {
       var delta = -e.originalEvent.detail/3;
       VVVV.MousePositions[canvas.id].wheel += delta;
       VVVV.MousePositions['_all'].wheel += delta;
     })
-    $(canvas).mousedown(function(e) {
+    canvas.on('mousedown', function(e) {
       switch (e.which) {
         case 1: VVVV.MousePositions['_all'].lb = 1; VVVV.MousePositions[canvas.id].lb = 1; break;
         case 2: VVVV.MousePositions['_all'].mb = 1; VVVV.MousePositions[canvas.id].mb = 1; break;
         case 3: VVVV.MousePositions['_all'].rb = 1; VVVV.MousePositions[canvas.id].rb = 1; break;
       }
     });
-    $(canvas).mouseup(function(e) {
+    canvas.on('mouseup', function(e) {
       switch (e.which) {
         case 1: VVVV.MousePositions['_all'].lb = 0; VVVV.MousePositions[canvas.id].lb = 0; break;
         case 2: VVVV.MousePositions['_all'].mb = 0; VVVV.MousePositions[canvas.id].mb = 0; break;
@@ -1011,14 +1011,14 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
   }
   
   this.destroy = function() {
-    $(canvas).remove();
+    canvas.destroy();
   }
 
   this.evaluate = function() {
     
     if (this.invisiblePins["Descriptive Name"].pinIsChanged()) {
-      if ($(canvas).hasClass('vvvv-js-generated-renderer'))
-        $(canvas).remove();
+      if(canvas)
+        canvas.destroy();
       this.getContext();
     }
   
@@ -1029,14 +1029,14 @@ VVVV.Nodes.RendererCanvas = function(id, graph) {
       var w = parseInt(bufferWidthIn.getValue(0));
       if (w>0) {
         canvasWidth = w;
-        $(canvas).attr('width', canvasWidth);
+        canvas.width = canvasWidth;
       }
     }
     if (bufferHeightIn.pinIsChanged()) {
       var h = parseInt(bufferHeightIn.getValue(0));
       if (h>0) {
         canvasHeight = h;
-        $(canvas).attr('height', canvasHeight);
+        canvas.height = canvasHeight;
       }
     }
       
