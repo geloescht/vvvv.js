@@ -135,6 +135,15 @@ VVVV.Host =
     }
   },
   
+  Network:
+  {
+    get WebSocket()
+    {
+      Object.defineProperty(this, 'WebSocket', { value: require('ws'), getter: undefined });
+      return this.WebSocket;
+    }
+  },
+  
   onInitialisationComplete: function(VVVV)
   {
     //process command line options etc.

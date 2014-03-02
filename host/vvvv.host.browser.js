@@ -157,6 +157,11 @@ VVVV.Host =
     }
   },
   
+  Network:
+  {
+    WebSocket: (typeof MozWebSocket != 'undefined') ? MozWebSocket : WebSocket
+  },
+  
   onInitialisationComplete: function(VVVV)
   {
     $("script[language='VVVV']").each(function(i) {
