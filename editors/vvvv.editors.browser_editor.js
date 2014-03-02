@@ -1,4 +1,12 @@
+//AMD compatibility
 
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require) { return function(VVVV) {
+
+//actual code begins here
 var UIState = {
   'Idle': 0,
   'Connecting': 1,
@@ -1279,3 +1287,5 @@ VVVV.VVVViewer = function(patch, selector) {
 }
 
 VVVV.Editors["edit"] = VVVV.Editors.BrowserEditor.Interface;
+
+}});
