@@ -112,14 +112,14 @@ VVVV.Host =
     
     get WebGLImage()
     {
-      VVVV.Graphics.WebGLImage = require('node-webgl').Image;
-      return VVVV.Graphics.WebGLImage;
+      Object.defineProperty(this, 'WebGLImage', { value:  require('node-webgl').Image, getter: undefined });
+      return this.WebGLImage;
     },
     
     get CanvasImage()
     {
-      VVVV.Graphics.CanvasImage = require('canvas').Image;
-      return VVVV.Graphics.CanvasImage;
+      Object.defineProperty(this, 'CanvasImage', { value: require('canvas').Image, getter: undefined });
+      return this.CanvasImage;
     },
     
     getScreenSize: function()
