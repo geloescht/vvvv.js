@@ -587,6 +587,7 @@ VVVV.Core = {
     }
     
     this.serialize = function() {
+      var $ = VVVV.Host.Markup.$;
       var $node = $("<NODE>");
       $node.attr("id", this.id);
       $node.attr("nodename", this.nodename);
@@ -661,7 +662,7 @@ VVVV.Core = {
     this.serialize = function() {
       // calling it LONK instead of LINK here, because jquery does not make a closing tag for LINK elements
       // renaming it to LINK later ...
-      var $link = $("<LONK>");
+      var $link = VVVV.Host.Markup.$("<LONK>");
       $link.attr("srcnodeid", this.fromPin.node.id);
       $link.attr("srcpinname", this.fromPin.pinname);
       $link.attr("dstnodeid", this.toPin.node.id);
@@ -1162,8 +1163,8 @@ VVVV.Core = {
     }
     
     this.toXML = function() {
-      var $patch = $("<PATCH>");
-      var $bounds = $("<BOUNDS>");
+      var $patch = VVVV.Host.Markup.$("<d><PATCH></PATCH></d>").find('PATCH');
+      var $bounds = VVVV.Host.Markup.$("<BOUNDS>");
       $bounds.attr("type", "Window");
       $bounds.attr("width", parseInt(this.windowWidth * 15));
       $bounds.attr("height", parseInt(this.windowHeight * 15));
@@ -1179,7 +1180,7 @@ VVVV.Core = {
         $patch.append(l.serialize());
       }
       
-      var xml = '<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv45beta28.1.dtd" >\r\n  '+$patch.wrapAll('<d></d>').parent().html();
+      var xml = '<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv45beta28.1.dtd" >\r\n  '+$patch.parent().html();
       xml = xml.replace(/<patch/g, "<PATCH");
       xml = xml.replace(/<\/patch>/g, "\n  </PATCH>");
       xml = xml.replace(/<node/g, "\n  <NODE");
