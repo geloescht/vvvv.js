@@ -707,6 +707,7 @@ VVVV.Core = {
     }
     
     this.getRelativePath = function() {
+      if(!this.nodename) return '';
       var match = this.nodename.match(/(.*\/)?[^/]+\.v4p/);
       return match[1] || '';
     }
@@ -1308,8 +1309,9 @@ VVVV.Core = {
       });
     }
     else {
+      var that = this;
       this.doLoad(ressource, function() {
-        if (this.success) this.success();
+        if (that.success) that.success();
       });
       
     }
