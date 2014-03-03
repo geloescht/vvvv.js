@@ -4,7 +4,7 @@
 // Additional authors of sub components are mentioned at the specific code locations.
 
 /** @define {string} */
-var VVVV_ENV = 'development';
+VVVV_ENV = 'development';
 
 //AMD compatibility
 
@@ -95,6 +95,7 @@ VVVV.init = function (mode, callback) {
     }
     if (mode=='vvvviewer' || mode=='full') {
       require('./lib/d3-v3/d3.v3.min');
+      packages.push('./editors/vvvv.editors.browser_editor');
     }
     
     require(packages, function()
