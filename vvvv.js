@@ -91,6 +91,7 @@ VVVV.init = function (mode, callback) {
                                   './nodes/vvvv.nodes.3d', 
                                   './nodes/vvvv.nodes.node', 
                                   './nodes/vvvv.nodes.astronomy', 
+                                  './nodes/vvvv.nodes.vvvv',
                                   './nodes/vvvv.nodes.xml' ]);
     }
     if (mode=='vvvviewer' || mode=='full') {
