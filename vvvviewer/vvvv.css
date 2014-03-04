@@ -10,6 +10,14 @@ h1{
   fill: #9a9a9a;
 }
 
+.vvvv-node.boygrouped .vvvv-node-pinbar{
+  fill:#5070ab;
+}
+
+.vvvv-node.boygrouped .vvvv-node-background{
+  fill:#a8b3eb;
+}
+
 
 /* Interactive Elements */
 

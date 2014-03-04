@@ -223,7 +223,7 @@ VVVV.Editors.BrowserEditor.PatchWindow = function(p, editor, selector) {
   
   function resetSelection() {
     chart.selectAll('.vvvv-node.selected')
-      .attr('class', function(d) { return d.isIOBox? 'vvvv-node vvvv-iobox' : 'vvvv-node' })
+      .attr('class', function(d) { return 'vvvv-node' + (d.isIOBox? ' selected' : '') + (d.boygrouped? ' boygrouped' : '') })
     selectedNodes = [];
   }
   
@@ -599,6 +599,18 @@ VVVV.Editors.BrowserEditor.PatchWindow = function(p, editor, selector) {
           e.preventDefault();
           return false;
         }
+        // CTRL + B / Boygroup node(s)
+        else if((e.which==66) && e.ctrlKey) {
+          var cmd = "<PATCH>";
+          for (var i=0; i<selectedNodes.length; i++) {
+            var n = selectedNodes[i];
+            cmd += "<NODE componentmode='Node' id='"+n.id+"' managers='boygroup'></NODE>";
+          }
+          cmd += "</PATCH>";
+          editor.update(patch, cmd);
+          e.preventDefault();
+          return false;
+        }
       })
     
       $(thatWin.window).resize(function() {
@@ -661,6 +673,8 @@ VVVV.Editors.BrowserEditor.PatchWindow = function(p, editor, selector) {
           var c = 'vvvv-node';
           if (d.isIOBox)
             c += ' vvvv-iobox';
+          if(d.boygrouped)
+            c += ' boygrouped';
           if (selectedNodes.indexOf(d)>=0) {
             c += ' selected';
           }
