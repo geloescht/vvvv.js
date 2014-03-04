@@ -60,6 +60,8 @@ VVVV.Nodes.BoyGroup = function(id, graph) {
 
   this.evaluate = function() {
     var self = this;
+    if(VVVV.Config.mode != 'server')
+      return;
   
     connectionsChanged = connectionsChanged || clientsIn.pinIsChanged();
     

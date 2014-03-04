@@ -62,6 +62,7 @@ VVVV.onNotImplemented = function(nodename) {
  */
 VVVV.init = function (mode, callback) {
   VVVV.Root = require.toUrl('.');
+  VVVV.Config.mode = mode;
 
   if (VVVV_ENV=='development') console.log('loading vvvv.js ...');
 
@@ -69,7 +70,7 @@ VVVV.init = function (mode, callback) {
     //Collect all the packages we need to load
     //Use relative paths within VVVV.js so requireJS's baseUrl parameter can be set to anything
     var packages = ['./host/vvvv.host.' + hostName, './thirdparty', './core/vvvv.core'];
-    if (mode=='run' || mode=='full') {
+    if (mode=='run' || mode=='full' || mode=='server' || mode=='client') {
       packages = packages.concat(['./mainloop/vvvv.mainloop', 
                                   './mainloop/vvvv.dominterface', 
                                   './nodes/vvvv.nodes.value', 
@@ -94,7 +95,7 @@ VVVV.init = function (mode, callback) {
                                   './nodes/vvvv.nodes.vvvv',
                                   './nodes/vvvv.nodes.xml' ]);
     }
-    if (mode=='vvvviewer' || mode=='full') {
+    if (mode=='vvvviewer' || mode=='full' || mode=='server') {
       require('./lib/d3-v3/d3.v3.min');
       packages.push('./editors/vvvv.editors.browser_editor');
     }
