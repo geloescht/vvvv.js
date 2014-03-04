@@ -52,14 +52,36 @@ VVVV.Nodes.BoyGroupServer = function(id, graph) {
   var connections = {};
   var connectionsChanged = false;
   
-  this.sendPatch = function(ws)
+  var self = this;
+  
+  var oldDoLoad = this.parentPatch.doLoad;
+  this.parentPatch.doLoad = function(xml, ready_callback)
+  {
+    oldDoLoad.call(this, xml, ready_callback);
+    for(var host in connections)
+    {
+      var con = connections[host];
+      if(con.ws.readyState == 1)
+        self.sendPatch(con.ws, xml);
+    }
+  }
+  
+  this.sendPatch = function(ws, xml)
   {
     var patch = this.parentPatch;
-    ws.send(patch.toXML());
+    if(!xml)
+      xml = patch.toXML();
+    var msg = { message: 'patch', path: patch.nodename };
+    ws.send(VVVV.Host.JSON.stringify(msg) + '\n\n' + xml + '\n');
+  }
+  
+  this.sendHeidiho = function(ws)
+  {
+    var msg = { message: 'heidiho', mode: VVVV.Config.mode, NetworkCapabilities: VVVV.Host.Capabilities.Network };
+    ws.send(VVVV.Host.JSON.stringify(msg));
   }
 
   this.evaluate = function() {
-    var self = this;
     if(VVVV.Config.mode != 'server')
       return;
   
@@ -89,6 +111,7 @@ VVVV.Nodes.BoyGroupServer = function(id, graph) {
           con.ws.onopen = function()
           {
             console.log("Connection successfully opened!", this);
+            self.sendHeidiho(this);
             self.sendPatch(this);
             connectionsChanged = true;
           };
