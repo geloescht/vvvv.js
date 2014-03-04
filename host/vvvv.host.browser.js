@@ -98,6 +98,8 @@ VVVV.Host =
     }
   },
   
+  JSON: JSON, //FIXME
+  
   Graphics:
   {
     getContext: function(type, options, selector)

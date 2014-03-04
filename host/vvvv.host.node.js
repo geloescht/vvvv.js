@@ -56,6 +56,8 @@ VVVV.Host =
     }
   },
   
+  JSON: JSON,
+  
   Graphics:
   {
     getContext: function(type, options, selector)
