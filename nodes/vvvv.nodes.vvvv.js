@@ -22,7 +22,7 @@ define(function(require) { return function(VVVV) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-VVVV.Nodes.BoyGroup = function(id, graph) {
+VVVV.Nodes.BoyGroupServer = function(id, graph) {
   this.constructor(id, "BoyGroup (VVVV Server)", graph);
   
   this.meta = {
@@ -35,8 +35,8 @@ VVVV.Nodes.BoyGroup = function(id, graph) {
   this.auto_evaluate = true;
   
   var clientsIn = this.addInputPin("Clients", [], VVVV.PinTypes.String);
-  var logIn = this.addInputPin("Log to TTY", [ 'FIXME' ], VVVV.PinTypes.Enum);
-  var broadcastModeIn = this.addInputPin("Broadcast Mode", [ 'FIXME' ], VVVV.PinTypes.Enum);
+  var logIn = this.addInputPin("Log to TTY", [ 'None' ], VVVV.PinTypes.Enum);
+  var broadcastModeIn = this.addInputPin("Broadcast Mode", [ 'WS' ], VVVV.PinTypes.Enum);
   var clearIn = this.addInputPin("ClearWarnings", [ 0 ], VVVV.PinTypes.Value);
   var broadcastIPIn = this.addInvisiblePin("Broadcast IP", [], VVVV.PinTypes.String);
   var portIn = this.addInvisiblePin("Network Port", [ 3333 ], VVVV.PinTypes.Value);
@@ -119,6 +119,38 @@ VVVV.Nodes.BoyGroup = function(id, graph) {
   }
 
 }
-VVVV.Nodes.BoyGroup.prototype = new VVVV.Core.Node();
+VVVV.Nodes.BoyGroupServer.prototype = new VVVV.Core.Node();
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ NODE: BoyGroup (VVVV Client)
+ Author(s): Lukas Winter
+ Original Node Author(s): VVVV Group
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+VVVV.Nodes.BoyGroupClient = function(id, graph) {
+  this.constructor(id, "BoyGroup (VVVV Client)", graph);
+  
+  this.meta = {
+    authors: ['Lukas Winter'],
+    original_authors: ['VVVV Group'],
+    credits: [],
+    compatibility_issues: ['Basically everything']
+  };
+  
+  this.auto_evaluate = true;
+  
+  var serverIDIn = this.addInputPin("ServerID", [ 0 ], VVVV.PinTypes.Value);
+  var logIn = this.addInputPin("Log to TTY", [ 'None' ], VVVV.PinTypes.Enum);
+  var graphReqIn = this.addInputPin("Graph Request", [ 'FIXME' ], VVVV.PinTypes.Enum);
+  
+  var clientIDOut = this.addOutputPin("ClientID", [ 0 ], VVVV.PinTypes.Value);
+  var sentMsgsOut = this.addOutputPin("Sent Messages", [ 0 ], VVVV.PinTypes.Value);
+  var receivedMsgsOut = this.addOutputPin("Received Messages", [ 0 ], VVVV.PinTypes.Value);
+  var inPatchOut = this.addInputPin("In Patch", [ 0 ], VVVV.PinTypes.Value); //FIXME
+
+}
+VVVV.Nodes.BoyGroupClient.prototype = new VVVV.Core.Node();
 
 }});
