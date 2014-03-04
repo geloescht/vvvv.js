@@ -9,6 +9,25 @@ VVVV.js allows you to use the world's greatest visual programming language [VVVV
 2D Canvas and 3D WebGL graphics without writing a single line of code. It comes with a built in, browser based patch editor,
 you don't need any additional software.
 
+About this fork:
+----------------
+
+**This is a fork of the official VVVV.js by Matthias Zauner**
+
+In this fork I intend to implement the following things:
+* Make the core of VVVV.js host-agnostic.
+* Port VVVV.js to [node.js](http://nodejs.org).
+* Implement a variant of [boygrouping](http://vvvv.org/documentation/boygrouping-basics).
+* Eat all bugs I find on the way (yummy!).
+
+Not implemented on node at this point:
+* All Canvas and DOM functionality. Only the WebGL renderer is supported.
+* Most user interaction.
+* Live patching on node will probably never be supported. Use the browser editor instead.
+* Most stuff hasn't been tested on node yet.
+While porting to node I try not to break anything in the browser...
+We interrupt our program for the original README. Skip to '[Running VVVV.js in Node](#running-vvvvjs-in-node)' for instructions on how to use this fork.
+
 Main Features
 -------------
 
@@ -44,7 +63,7 @@ dots in directory names, so make sure to really rename the 'vvvv.js' from the ar
 2. Create a new patch. You do so by just creating an empty .v4p file at the location you'd like to have it, for example, mypatch.v4p.
 
 3. Include VVVV.js and the mypatch.v4p in your website (e.g. index.html) like this:
-
+```
     index.html
     <head>
     ...
@@ -60,7 +79,7 @@ dots in directory names, so make sure to really rename the 'vvvv.js' from the ar
     </script>
     ...
     </head>
-    
+```
 All the patches (and subpatches) loaded are stored in the VVVV.Patches object. You can access the VVVV.Core.Patch object created above for further processing via
 
     VVVV.Patches[0];
@@ -73,9 +92,9 @@ All the patches (and subpatches) loaded are stored in the VVVV.Patches object. Y
 
 ### Manually loading patches
 
-If the <script> tag method above doesn't suit your needs (e.g. because you don't want to run the patch immeditely), you can create
+If the &lt;script&gt; tag method above doesn't suit your needs (e.g. because you don't want to run the patch immeditely), you can create
 the VVVV.Core.Patch object yourself like so:
-
+```
     <head>
     ...
     <script language="JavaScript" src="javascripts/vvvv_js/lib/jquery/jquery-1.8.2.min.js"></script> 
@@ -94,20 +113,33 @@ the VVVV.Core.Patch object yourself like so:
     </script>
     ...
     </head>
-
+```
 ### Rendering Patches with the VVVViewer
 
 You can load and render a patch embedded in a web site by first creating a Patch object as shown above, and then pass it to a newly created VVVViewer object:
-
+```
     var myvvvviewer;
     var mypatch = new VVVV.Core.Patch("mypatch.v4p", function() {
       myvvvviewer = new VVVV.VVVViewer(this, '#patch');
     });
-    
+```
 This is the corresponding HTML code:
-
+```
     <div id='patch'>Your browser does not support the VVVViewer</div>
-    
+```
 While in the example above the Patch constructor new VVVV.Core.Patch("mypatch.v4p", ...) loads a VVVV patch file from the remote server,
 it is also possible to just pass actual VVVV XML Code to the constructor instead of a filename.
 This might be the case, when you display VVVV Code which comes from a forum post or a blog entry.
+
+### Running VVVV.js in Node
+
+Running VVVV.js in node is easy. At least if your copy of npm can build binary modules.
+* First download or clone this repository anywhere on your computer. Take the *host* branch of you don't care for boygrouping.
+* Open a terminal window / shell and switch to said directory.
+* Install the needed modules by running *npm install amdefine underscore cheerio ws gl-matrix node-webgl*
+* Switch to *examples/02_webgl_texturedquads*. It's the only example working in node right now.
+* If you are using the *host* branch, run *node ../../node-run example02.v4p*
+* If you are using the *boygrouping* branch, you can also run *node ../../boygroup-client* and then open *index.html* inside the same directory in your favourite browser supporting WebSockets and WebGL.
+
+If everything went well you should have a window with a rotating spiral of cyan coloured crosses. It will probably close as soon as you move your mouse pointer inside. Just try to avoid this in the future.
+At the same time, in the browser almost everything should work exactly as in vanilla vvvv.js. However the code to integrate VVVV.js in your HTML has changed a little. Just take a look at the source code of *examples/02_webgl_texturedquads/index.html*.
