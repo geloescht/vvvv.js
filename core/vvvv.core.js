@@ -248,6 +248,7 @@ VVVV.Core = {
     this.isShader = false;
     this.resourcesPending = 0;
     this.auto_nil = true;
+    this.boygrouped = false;
     
     this.setupObject = function() { // had to put this into a method to allow Patch to "derive" from Node. Really have to understand this javascript prototype thing some day ...
       this.inputPins = {};
@@ -604,6 +605,9 @@ VVVV.Core = {
       else
         $node.attr("componentmode", "Hidden");
       
+      if(this.boygrouped)
+        $node.attr('managers', 'boygroup');
+      
       var $bounds = $("<BOUNDS>");
       if (this.isIOBox)
         $bounds.attr("type", "Box");
@@ -947,6 +951,9 @@ VVVV.Core = {
         
         if (/^iobox/.test(n.nodename.toLowerCase()))
           n.isIOBox = true;
+        
+        if($(this).attr('managers') == 'boygroup')
+          n.boygrouped = true;
 		  
         //To add anything which relates to all nodes
         if (!nodeExists)
