@@ -1320,7 +1320,8 @@ VVVV.Core = {
     // bind the #-shortcuts
     
     //FIXME: Editors should do this themselves! Disable for now for node.js
-    /*
+    if(typeof window != "undefined")
+    {
     function checkLocationHash() {
       var match = window.location.hash.match('#([^\/]+)\/'+thisPatch.ressource+'$');
       if (match) {
@@ -1333,7 +1334,8 @@ VVVV.Core = {
     
     $(window).bind('hashchange', function() {
       checkLocationHash();
-    });*/
+    });
+    }
     
     
   }
