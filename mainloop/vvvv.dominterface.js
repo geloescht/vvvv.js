@@ -8,6 +8,8 @@ define(function(require) { return function(VVVV) {
 
 //actual code begins here
 
+var _ = require('underscore');
+
 VVVV.Core.DOMInterface = function(patch) {
 
   var inputConnectors = {};
