@@ -146,6 +146,17 @@ VVVV.Host =
     }
   },
   
+  Capabilities:
+  {
+    Network:
+    {
+      WebSocket: { client: true, server: true },
+      WebRTC: { peer: false, broker: false }, //FIXME
+      UDP: { client: true, server: true },
+      TCP: { client: true, server:true }
+    }
+  },
+  
   onInitialisationComplete: function(VVVV)
   {
     //process command line options etc.

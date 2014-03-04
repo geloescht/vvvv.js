@@ -161,7 +161,19 @@ VVVV.Host =
   
   Network:
   {
-    WebSocket: (typeof MozWebSocket != 'undefined') ? MozWebSocket : WebSocket
+    WebSocket: (typeof MozWebSocket != 'undefined') ? MozWebSocket : WebSocket,
+    RTCPeerConnection: (typeof webkitRTCPeerConnection != 'undefined') ? webkitRTCPeerConnection : mozRTCPeerConnection
+  },
+  
+  Capabilities:
+  {
+    Network:
+    {
+      WebSocket: { client: typeof MozWebSocket != 'undefined' || typeof WebSocket != 'undefined', server: false },
+      WebRTC: { peer: typeof webkitRTCPeerConnection != 'undefined' || typeof mozRTCPeerConnection != 'undefined', broker: false }, //FIXME
+      UDP: { client: false, server: false },
+      TCP: { client: false, server: false }
+    }
   },
   
   onInitialisationComplete: function(VVVV)
