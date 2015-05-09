@@ -30,6 +30,15 @@ VVVV.PinTypes.AudioBuffer = {
   connectionChangedHandlers: {}
 }
 
+VVVV.PinTypes.PeriodicWave = {
+  typeName: "PeriodicWave",
+  reset_on_disconnect: true,
+  defaultValue: function() {
+    return "Uninitialised waveform";
+  },
+  connectionChangedHandlers: {}
+}
+
 var WebAudioOutputSlice = function WebAudioOutputSlice(srcApiNode, srcName)
 {
   this.srcApiNode = srcApiNode;
@@ -584,6 +593,46 @@ VVVV.Nodes.AudioIn.prototype = new WebAudioNode('MediaStreamSource');
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ NODE: PeriodicWave (HTML5 Audio Join)
+ Author(s): 'Lukas Winter'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+VVVV.Nodes.PeriodicWaveJoin = VVVV.Nodes.Oscillator = function(id, graph) {
+  this.constructor(id, 'PeriodicWave (HTML5 Audio Join)', graph);
+  
+  this.meta = {
+    authors: ['Lukas Winter'],
+    original_authors: [],
+    credits: [],
+    compatibility_issues: ['bin size not working']
+  };
+  
+  var that = this;
+  this.auto_evaluate = false;
+  
+  var realIn = this.addInputPin("Input Real",      [0, 0], VVVV.PinTypes.Value);
+  var imagIn = this.addInputPin("Input Imaginary", [0, 1], VVVV.PinTypes.Value);
+  var binSizeIn = this.addInputPin("Bin Size", [-1], VVVV.PinTypes.Value);
+  
+  var waveOut = this.addOutputPin("Output", [], VVVV.PinTypes.PeriodicWave);
+  
+  this.evaluate = function() {
+    if(realIn.pinIsChanged() || imagIn.pinIsChanged())
+    {
+      var n = this.getMaxInputSliceCount();
+      var realBuffer = new Float32Array(realIn.getValue(0, n));
+      var imagBuffer = new Float32Array(imagIn.getValue(0, n));
+      
+      var wave = audioContext.createPeriodicWave(realBuffer, imagBuffer);
+      waveOut.setValue(0, wave);
+    }
+  }
+}
+VVVV.Nodes.PeriodicWaveJoin.prototype = new VVVV.Core.Node();
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  NODE: Oscillator (HTML5 Audio)
  Author(s): 'Lukas Winter'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -601,6 +650,7 @@ VVVV.Nodes.Oscillator = function(id, graph) {
   
   var typeIn = this.addInputPin("Type", ['sine'], VVVV.PinTypes.Enum);
   typeIn.enumOptions = ['sine', 'square', 'sawtooth', 'triangle', 'custom' ];
+  var waveIn = this.addInputPin("Custom Wave", [], VVVV.PinTypes.PeriodicWave);
   
   this.createAPISingleNode = function()
   {
@@ -619,6 +669,12 @@ VVVV.Nodes.Oscillator = function(id, graph) {
     {
       for(var i = 0; i < n; i++)
         this.apiMultiNode[i].type = typeIn.getValue(i);
+    }
+    
+    if(waveIn.pinIsChanged())
+    {
+      for(var i = 0; i < n; i++)
+        this.apiMultiNode[i].setPeriodicWave(waveIn.getValue(i));
     }
   }
 }
