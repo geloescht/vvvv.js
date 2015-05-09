@@ -815,7 +815,7 @@ VVVV.Nodes.Convolver.prototype = new WebAudioNode('Convolver');
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-VVVV.Nodes.WaveShaper = function(id, graph) {
+VVVV.Nodes.WaveShaperAudio = function(id, graph) {
   WebAudioNode.call(this, id, 'WaveShaper (HTML5 Audio)', graph);
   
   this.meta = {
@@ -864,7 +864,7 @@ VVVV.Nodes.WaveShaper = function(id, graph) {
     }
   }
 }
-VVVV.Nodes.WaveShaper.prototype = new WebAudioNode('WaveShaper');
+VVVV.Nodes.WaveShaperAudio.prototype = new WebAudioNode('WaveShaper');
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
